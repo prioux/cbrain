@@ -18,7 +18,7 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program.  If not, see <http://www.gnu.org/licenses/>.  
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 -%>
 
@@ -28,10 +28,14 @@
 %>
 
 <% unless log.blank? %>
+  <div class="row">
+  <div class="col-xs-12">
   <%= build_accordion do |acc| %>
     <%= acc.section h(title) do %>
       <pre><%= Message.parse_markup(log) %></pre>
     <% end %>
   <% end %>
+  </div>
+  </div>
 <% end %>
 

@@ -22,64 +22,64 @@
 #
 -%>
 
-<% title "PIERRE WORK" %>
-
 <% title "Project Info" %>
 
 <% if @group.is_a?(WorkGroup) %>
-  <%= bs_menubar do %>
+  <div class="menu_bar">
     <% unless @group.creator_id == current_user.id %>
-      <%= link_to bs_ban_icon('Unregister'), {:action => :unregister, :id => @group.id}, :class => "btn btn-primary", :method  => :post %>
+      <%= link_to 'Unregister', {:action => :unregister, :id => @group.id}, :class => "button", :method  => :post %>
     <% end %>
     <% if @group.can_be_edited_by?(current_user) %>
 
-        <%= link_to bs_switch_icon('Switch'), {:action => :switch, :id => @group.id}, :class => "btn btn-primary", :method  => :post %>
+        <%= link_to 'Switch', {:action => :switch, :id => @group.id}, :class => "button", :method  => :post %>
         <% if current_user.has_role?(:normal_user) && @group.can_be_edited_by?(current_user) && current_user.visible_users.present? %>
-          <%= overlay_ajax_link "Invite Other Users", new_invitation_path(group_id: @group.id), :class => "btn btn-primary" %>
+          <%= overlay_ajax_link "Invite Other Users", new_invitation_path(group_id: @group.id), class: "button" %>
         <% end %>
-        <%= link_to bs_trash_icon('Delete'), group_path(@group), { :confirm => "Are you sure you want to delete '#{@group.name}'?", :method => :delete, :class => "btn btn-primary" } %>
+        <%= link_to 'Delete', group_path(@group), { :confirm => "Are you sure you want to delete '#{@group.name}'?", :method => :delete, :class => "button" } %>
     <% end %>
-  <% end %>
+    </div>
 <% end %>
 
 <P>
 
-<%= bs_error_messages_for @group, :header_message => "Project could not be updated." %>
+<%= error_messages_for @group, :header_message => "Project could not be updated." %>
 
-<%= bs_row do %>
+<div class="display_inline_block" style="min-width: 50%">
 
-  <%= bs_show_table(@group, :edit_condition => @group.can_be_edited_by?(current_user)) do |t| %>
+  <%= show_table(@group, :edit_condition => @group.can_be_edited_by?(current_user)) do |t| %>
 
     <% t.edit_cell(:name) do %>
-      <%= text_field_tag "group[name]", @group.name, :class => "form-control" %>
+      <%= text_field_tag "group[name]", @group.name %>
     <% end %>
 
     <% t.edit_cell(:creator_id, :content => link_to_user_with_tooltip(@group.creator), :header => "Creator") do %>
-      <%= user_select "group[creator_id]", { :users => ( current_user.available_users | @group.users), :selector => @group.creator }, :class => "form-control" %>
-      <span class="warning">Warning</span>: If you change the Creator to someone else you won't be able to edit this project any more
+      <%= user_select "group[creator_id]", { :users => ( current_user.available_users | @group.users), :selector => @group.creator } %>
+      <div class="field_explanation"><span class="warning">Warning</span>: If you change the Creator to someone else you won't be able to edit this project any more</div>
     <% end %>
 
     <% t.edit_cell(:site_id, :content => link_to_site_if_accessible(@group.site), :disabled => !current_user.has_role?(:admin_user)) do %>
-      <%= site_select "group[site_id]", @group.site_id, :prompt => "(Select a site)", :class => "form-control" %>
+      <%= site_select "group[site_id]", @group.site_id, :prompt => "(Select a site)" %>
     <% end %>
 
     <% t.cell("Type") { @group.pretty_category_name(current_user) } %>
 
     <% t.edit_cell(:description, :content =>  full_description(@group.description)) do %>
-        <%= text_area_tag "group[description]", @group.description, :rows => 4, :class => "form-control" %>
-        The first line should be a short summary, and the rest are for details.
+        <%= text_area_tag "group[description]", @group.description, :rows => 4, :cols => 40 %><br>
+        <div class="field_explanation">The first line should be a short summary, and the rest are for details.</div><br>
     <% end %>
 
     <% if current_user.has_role?(:admin_user) && @group.is_a?(WorkGroup) %>
       <% t.edit_cell("Invisible", :content => check_box_tag(nil ,nil, @group.invisible?, :disabled => true)) do %>
         <%= hidden_field_tag "group[invisible]", "0" %>
-        <%= check_box_tag("group[invisible]", "1", @group.invisible?, :class => "form-control") %>
+        <%= check_box_tag("group[invisible]", "1", @group.invisible?) %>
       <% end %>
     <% end %>
 
+    <% t.empty_cell %>
+
   <% end %>
 
-  <%= bs_show_table(@group, :header => 'Resources') do |t| %>
+  <%= show_table(@group, :header => 'Resources') do |t| %>
 
     <% t.cell("Files") { index_count_filter @group.userfiles.count, :userfiles, {:group_id => @group.id}, :show_zeros => true } %>
 
@@ -102,7 +102,7 @@
        group_access_profiles = "(None)" if group_access_profiles.blank?
     %>
 
-    <%= bs_show_table(@group, :header => 'Assigned To Access Profiles') do |t| %>
+    <%= show_table(@group, :header => 'Assigned To Access Profiles') do |t| %>
       <% t.cell("", :no_header => true, :show_width => 2) do %>
         <span><%= group_access_profiles %></span>
       <% end %>
@@ -114,9 +114,9 @@
     open_invites   = Invitation.where(sender_id: current_user.id, group_id: @group.id, active: true)
   %>
 
-  <%= bs_show_table(@group, :header => 'Members', :edit_condition => @group.can_be_edited_by?(current_user) && (!current_user.has_role?(:normal_user) || group_members.count > 1 || open_invites.present?)) do |t| %>
+  <%= show_table(@group, :header => 'Members', :edit_condition => @group.can_be_edited_by?(current_user) && (!current_user.has_role?(:normal_user) || group_members.count > 1 || open_invites.present?)) do |t| %>
 
-    <% default_text = array_to_table(group_members.sort{ |a,b| a.login.casecmp(b.login)}, :table_class => 'simple bordered float_left table', :cols => 20, :min_data => 20, :fill_by_columns => true ) { |u,r,c| link_to_user_with_tooltip(u) } %>
+    <% default_text = array_to_table(group_members.sort{ |a,b| a.login.casecmp(b.login)}, :table_class => 'simple bordered float_left', :cols => 20, :min_data => 20, :fill_by_columns => true ) { |u,r,c| link_to_user_with_tooltip(u) } %>
 
     <% t.edit_cell(:user_id, :show_width => 2,
                              :no_header  => 'Members',
@@ -124,10 +124,13 @@
       <% if current_user.has_role? :normal_user %>
         <% group_members.each do |u| %>
           <%= link_to_user_with_tooltip u %><%= link_to(": Remove", group_path(@group, "group[user_ids]" => (@group.user_ids - [u.id]), update_users: true ), :method => :put, :class => "action_link") unless u == current_user %>
+          <br>
         <% end %>
       <% else %>
-        <%= render :partial => 'users_form' %>
-        <%= hidden_field_tag :update_users, true %>
+        <div class="generalbox" style="width: 100%">
+          <%= render :partial => 'users_form' %><br>
+          <%= hidden_field_tag :update_users, true %>
+        </div>
       <% end %>
     <% end %>
     <% if open_invites.present? %>
@@ -138,14 +141,16 @@
                                :content    => default_text) do %>
         <% open_invites.each do |i| %>
           <%= link_to_user_with_tooltip i.user %>: <%= link_to("Cancel", invitation_path(i), :method => :delete, :class => "action_link") %>
+          <br>
         <% end %>
       <% end %>
     <% end %>
   <% end %>
 
-<% end # bs_row %>
+</div>
 
 <% if @group.can_be_edited_by?(current_user) %>
+  <P>
   <%= render :partial => "layouts/log_report", :locals  => { :log  => @group.getlog, :title => 'Project Log' } %>
 <% end %>
 

@@ -1,0 +1,21 @@
+<% if current_user.present? %>
+  <% ab_group = WorkGroup.where(:name => 'ab_switch', :creator_id => User.admin.id).first %>
+  <% if ab_group &&
+        request.method.to_s == 'GET' &&
+        ab_group.users.where(:id => current_user.id).exists? %>
+    <%
+      url = request.url.to_s
+      url = url.sub(/^(https?:\/\/)([^\/]+)/) do |_|
+        scheme = $1
+        host   = $2
+        if host =~ /:\d+$/
+          host.sub!(/:\d+$/,"")
+        else
+          host += ":4000"
+        end
+        scheme+host
+      end
+    %>
+    <%= link_to "A/B", url, :class => 'navbar-brand', :style => 'color: yellow' %>
+  <% end %>
+<% end %>

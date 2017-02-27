@@ -83,7 +83,7 @@ class GroupsController < ApplicationController
     @users = current_user.available_users.order(:login).reject { |u| u.class == CoreAdmin }
 
     respond_to do |format|
-      format.html
+      format.html { render :action => params[:a].to_i > 0 ? :ad_show : :show }
       format.xml  { render :xml  => @group.for_api }
       format.json { render :json => @group.for_api }
     end
