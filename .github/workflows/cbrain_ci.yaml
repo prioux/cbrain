@@ -70,7 +70,7 @@ jobs:
         uses: actions/cache@v3 # speeds up 'Prepare Ruby Gems' below
         with:
           path: gem-cache
-          key: ${{ runner.os }}-gems-${{ hashFiles('*/Gemfile') }}
+          key: ubuntu22-${{ runner.os }}-gems-${{ hashFiles('*/Gemfile') }}
 
       ###########################################################
       - name: Prepare Ruby Gems
