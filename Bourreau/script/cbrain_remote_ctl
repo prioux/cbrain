@@ -184,12 +184,17 @@ if test -s $db_file ; then
   # This takes the current file's content and makes the substitution in it.
   # Mostly used in 'console' mode but it can happen in 'start' mode if
   # a developer has installed manually a DB file.
-  cat $db_file | sed -e 's@socket:.*@socket: '"$PWD/$sockfile"'@' > $db_file.tmp
+  cat $db_file | sed -e 's@socket:.*@socket: '"$rails_home/$sockfile"'@' > $db_file.tmp
   mv -f $db_file.tmp $db_file
 else
   # This gets the file's content from STDIN and makes the substitution in it before writing.
   # Only used in 'start' mode.
-  cat | sed -e 's@socket:.*@socket: '"$PWD/$sockfile"'@' > $db_file
+  cat | sed -e 's@socket:.*@socket: '"$rails_home/$sockfile"'@' > $db_file
+fi
+
+# SSH Auth sock: if present, use it.
+if test -s "$rails_home/tmp/sockets/ssh_agent.sock" ; then # TODO add hostname to socket?
+  export SSH_AUTH_SOCK="$rails_home/tmp/sockets/ssh_agent.sock"
 fi
 
 
@@ -200,7 +205,7 @@ fi
 if test "$mode" = "console" ; then
   echo ""
   echo "Bourreau Console Starting on $curhost."
-  script/rails console $environment # this will BLOCk
+  script/rails console $environment # this will BLOCK
   errcode=$?
   echo ""
   echo "Bourreau Console Exiting on $curhost."

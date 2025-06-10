@@ -220,15 +220,23 @@ class RemoteResource < ApplicationRecord
   # Network Connection Methods
   ############################################################################
 
+  def use_reverse_ssh?
+    #test things here
+puts_red "DEV TODO"
+    return true
+  end
+
   # Returns (and creates if necessary) the master SSH connection
   # for this RemoteResource. The method does not start it, if
   # it's created.
   def ssh_master
     # SSH connect options are normally just the default ones,
     # but an admin can override them in the meta data of the object.
-    # The SSH agent forwarding is mandatory however.
+    # The SSH agent forwarding is mandatory however if not using the
+    # reverse SSH process.
+    use_agent = self.use_reverse_ssh? ? "no" : "yes" # the reverse SSH will take care of the agent forwarding
     ssh_options = (self.meta[:ssh_config_options].presence || {})
-                  .dup.merge( :ForwardAgent => 'yes' )
+                  .dup.merge( :ForwardAgent => use_agent )
     # category: we add the UNIX userid so as not to conflict
     # with any other user on the system when creating out socket in /tmp
     category = "#{self.class}_#{Process.uid}"
@@ -256,17 +264,21 @@ class RemoteResource < ApplicationRecord
     master.delete_tunnels(:forward)
     master.delete_tunnels(:reverse)
 
-    # Setup DB reverse tunnel
-    myconfig        = self.class.current_resource_db_config
-    local_db_host   = myconfig["host"]  || "localhost"
-    local_db_port   = (myconfig["port"] || "3306").to_i
-    rnd             = 1000000+rand(9999999)
-    master.add_tunnel(:reverse,
-      (Pathname.new(self.ssh_control_rails_dir) + "tmp/sockets/db.#{rnd}.sock").to_s,
-      local_db_host,
-      local_db_port,
-      nil # nil is important here
-    )
+    # Reverse SSH is an alternate mechanism which handles the DB
+    # forwarding and the SSH Agent forwarding separately.
+    if ! self.use_reverse_ssh?
+      # Setup DB reverse tunnel
+      myconfig        = self.class.current_resource_db_config
+      local_db_host   = myconfig["host"]  || "localhost"
+      local_db_port   = (myconfig["port"] || "3306").to_i
+      rnd             = 1000000+rand(9999999)
+      master.add_tunnel(:reverse,
+        (Pathname.new(self.ssh_control_rails_dir) + "tmp/sockets/db.#{rnd}.sock").to_s,
+        local_db_host,
+        local_db_port,
+        nil # nil is important here
+      )
+    end
 
     # Setup ActiveResource forward tunnel
     local_port  = 3090+self.id # see also in site()
@@ -404,11 +416,11 @@ class RemoteResource < ApplicationRecord
   # This must be a live check, not cached. A cached
   # way to check the state of the resource is to use the
   # info() method, which caches the information record.
-  def is_alive?(what = :ping)
+  def is_alive?(what = :ping, force = false)
     what = what.presence.try(:to_sym) || :ping
     self.reload
     return false if self.online == false
-    info_struct = Rails.cache.fetch(cache_key_for(what), :expires_in => 30.seconds) do
+    info_struct = Rails.cache.fetch(cache_key_for(what), :expires_in => 30.seconds, :force => force) do
       self.remote_resource_info(what) # what is 'info' or 'ping'
     end
     @info = info_struct if what == :info # caching within rails action
