@@ -139,7 +139,7 @@ class Bourreau < RemoteResource
     captfile = "/tmp/start.out.#{Process.pid}"
 
 if use_reverse_ssh?
-  start_reverse_ssh_command = "cd #{self.ssh_control_rails_dir.to_s.bash_escape}; script/start_reverse_ssh cbrain_connect_server 2>&1"
+  start_reverse_ssh_command = "cd #{self.ssh_control_rails_dir.to_s.bash_escape}; script/cbrain_reverse_ssh cbrain_connect_server 2>&1"
   out = self.read_from_remote_shell_command(start_reverse_ssh_command) { |io| io.read() } rescue ""
   if out !~ /CBRAIN Reverse SSH Started/i # output of 'start_reverse_ssh'
     self.operation_messages = "bad bad #{out}"

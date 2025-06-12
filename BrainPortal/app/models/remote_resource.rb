@@ -222,7 +222,7 @@ class RemoteResource < ApplicationRecord
 
   def use_reverse_ssh?
     #test things here
-puts_red "DEV TODO"
+puts_red "DEV TODO #{caller[0]}"
     return true
   end
 
@@ -234,7 +234,7 @@ puts_red "DEV TODO"
     # but an admin can override them in the meta data of the object.
     # The SSH agent forwarding is mandatory however if not using the
     # reverse SSH process.
-    use_agent = self.use_reverse_ssh? ? "no" : "yes" # the reverse SSH will take care of the agent forwarding
+    use_agent = "yes" #self.use_reverse_ssh? ? "no" : "yes" # the reverse SSH will take care of the agent forwarding
     ssh_options = (self.meta[:ssh_config_options].presence || {})
                   .dup.merge( :ForwardAgent => use_agent )
     # category: we add the UNIX userid so as not to conflict
