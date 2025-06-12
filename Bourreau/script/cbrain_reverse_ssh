@@ -49,7 +49,7 @@ curhost=$(hostname -s)
 rails_home=$PWD
 
 # hardcoded name for the moment; must be configured in .ssh/config
-ssh -q -n -N -x -f cbrain_services || echo "Failed to start SSH connection back to CBRAIN service host" && exit 20
+ssh -q -n -N -x -f cbrain_services || ( echo "Failed to start SSH connection back to CBRAIN service host" && exit 20 )
 
 echo "CBRAIN Reverse SSH Started" # this sentence is checked by the portal
 exit 0
