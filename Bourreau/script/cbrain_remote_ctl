@@ -193,7 +193,7 @@ else
 fi
 
 # SSH Auth sock: if present, use it.
-if test -s "$rails_home/tmp/sockets/ssh_agent.sock" ; then # TODO add hostname to socket?
+if test -S "$rails_home/tmp/sockets/ssh_agent.sock" ; then # TODO add hostname to socket?
   export SSH_AUTH_SOCK="$rails_home/tmp/sockets/ssh_agent.sock"
 fi
 
