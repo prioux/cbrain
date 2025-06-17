@@ -281,11 +281,11 @@ puts_red "DEV TODO #{caller[0]}"
     end
 
     # Setup ActiveResource forward tunnel
-    local_port  = 3090+self.id # see also in site()
     master.add_tunnel(:forward,
-      local_port,
+      "#{Rails.root}/tmp/sockets/#{self.name}.sock",
       nil, # nil is important here
-      (Pathname.new(self.ssh_control_rails_dir) + "tmp/sockets/bourreau.sock").to_s
+      (Pathname.new(self.ssh_control_rails_dir) + "tmp/sockets/bourreau.sock").to_s,
+      nil, # nil is important here too
     )
 
     # If the SSH master and tunnels have already been started by
@@ -439,6 +439,7 @@ puts_red "DEV TODO #{caller[0]}"
     host = "localhost"
     port = 3090+self.id  # see also in start_tunnels()
     "http://#{host}:#{port}"
+    "unix_socket:/#{Rails.root}/tmp/sockets/#{self.name}.sock"
   end
 
   # Returns a RemoteResourceInfo object describing the
