@@ -158,9 +158,14 @@ puts_red "TRACE 2 CHECK BOURREAU"
     # File to capture command output.
     captfile = "/tmp/start.out.#{Process.pid}"
 
-if use_reverse_ssh?
+if self.use_reverse_service?
 puts_red "TRACE 3 START TUNNEL PROCESS"
-  start_reverse_ssh_command = "cd #{self.ssh_control_rails_dir.to_s.bash_escape}; script/cbrain_reverse_ssh cbrain_connect_server 2>&1"
+  rev_user    = self.reverse_service_user
+  rev_host    = self.reverse_service_host
+  rev_port    = self.reverse_service_port
+  rev_dbsock  = self.reverse_service_db_socket_path
+  rev_sshsock = self.reverse_service_ssh_agent_socket_path
+  start_reverse_ssh_command = "cd #{self.ssh_control_rails_dir.to_s.bash_escape}; script/cbrain_reverse_ssh #{rev_user.bash_escape} #{rev_host.bash_escape} #{rev_port.bash_escape} #{rev_dbsock.bash_escape} #{rev_sshsock.bash_escape} 2>&1"
   out = self.read_from_remote_shell_command(start_reverse_ssh_command) { |io| io.read() } rescue "popen exception"
   if out !~ /CBRAIN Reverse SSH Started/i # output of 'start_reverse_ssh'
     self.operation_messages = "bad bad #{out}"

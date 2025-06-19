@@ -37,19 +37,49 @@ function fatal {
   exit 20
 }
 
+# Print usage if zero args, or -h or --help
+if test $# -eq 0 -o "X$1" = "-h" -o "X$1" = "--help" ; then
+  usage
+fi
+
+# Make sure we have all 5 args
+if test $# -ne 5 ; then
+  fatal "This program requires 5 arguments. See --help ."
+fi
+
 # This program only works if its CWD is the Bourreau's root dir.
-# We verify this by checking for the presence of a particular file
+# We verify this by checking for the presence of a particular file.
 if ! test -f "app/models/bourreau_worker.rb" ; then
   fatal "This program '$0' must be started from the Bourreau directory."
 fi
 
-# Run-time paths and names of host and program
-basename=$(basename $0)
-curhost=$(hostname -s)
-rails_home=$PWD
+# Positional arguments
+user="$1"
+host="$2"
+port="$3"
+dbspec="$4"
+sshagentspec="$5"
 
-# hardcoded name for the moment; must be configured in .ssh/config
-ssh -q -n -N -x -f cbrain_services || ( echo "Failed to start SSH connection back to CBRAIN service host" && exit 20 )
+# Run-time paths and names of host and program
+basename=$(basename $0)   # not used yet
+curhost=$(hostname -s)    # not used yet
+rails_home=$(realpath $PWD)
+
+# Local socket names that we will establish here
+database_sock="$rails_home"/tmp/sockets/db.reverse.sock
+sshagent_sock="$rails_home"/tmp/sockets/ssh_agent.sock
+
+# TMP; handle better in future
+rm -f "$database_sock" "$sshagent_sock"
+
+# Start the main SSH tunnel back to the service host
+ssh -q -n -N -x -f -p "$port" "$user@$host" \
+  -o ForwardAgent=No                        \
+  -o ForwardX11=No                          \
+  -o ExitOnForwardFailure=Yes               \
+  -L "$database_sock":"$dpspec"             \
+  -L "$sshagent_sock":"$sshagentspec"       \
+  || ( echo "Failed to start SSH connection back to CBRAIN service host" && exit 20 )
 
 echo "CBRAIN Reverse SSH Started" # this sentence is checked by the portal
 exit 0

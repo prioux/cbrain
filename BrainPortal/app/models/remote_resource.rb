@@ -222,23 +222,14 @@ class RemoteResource < ApplicationRecord
   # Network Connection Methods
   ############################################################################
 
-  def use_reverse_ssh?
-    #test things here
-puts_red "DEV TODO #{caller[0]}"
-    return true
-  end
-
   # Returns (and creates if necessary) the master SSH connection
   # for this RemoteResource. The method does not start it, if
   # it's created.
   def ssh_master
     # SSH connect options are normally just the default ones,
     # but an admin can override them in the meta data of the object.
-    # The SSH agent forwarding is mandatory however if not using the
-    # reverse SSH process.
-    use_agent = "yes" #self.use_reverse_ssh? ? "no" : "yes" # the reverse SSH will take care of the agent forwarding
     ssh_options = (self.meta[:ssh_config_options].presence || {})
-                  .dup.merge( :ForwardAgent => use_agent )
+                  .dup.merge( :ForwardAgent => "Yes" )
     # category: we add the UNIX userid so as not to conflict
     # with any other user on the system when creating our socket in /tmp
     category = "#{self.class}_#{Process.uid}"
@@ -268,7 +259,7 @@ puts_red "DEV TODO #{caller[0]}"
 
     # Reverse SSH is an alternate mechanism which handles the DB
     # forwarding and the SSH Agent forwarding separately.
-    if ! self.use_reverse_ssh?
+    if ! self.use_reverse_service?
       # Setup DB reverse tunnel
       myconfig        = self.class.current_resource_db_config
       local_db_host   = myconfig["host"]  || "localhost"
