@@ -33,6 +33,24 @@ class Bourreau < RemoteResource
 
   api_attr_visible :name, :user_id, :group_id, :online, :read_only, :description
 
+  validates :active_resource_control_port, numericality: { only_integer: true, greater_than: 1024, less_than: 65536 }, allow_blank: true
+
+  validates_format_of :reverse_service_user, :with => /\A\w[\w\-\.]*\z/,
+                      :message  => 'is invalid as only the following characters are accepted: alphanumeric characters, _, -, and .',
+                      :allow_blank => true
+  validates_format_of :reverse_service_host, :with => /\A\w[\w\-\.]*\z/,
+                      :message  => 'is invalid as only the following characters are accepted: alphanumeric characters, _, -, and .',
+                      :allow_blank => true
+  validates           :reverse_service_port, numericality: { only_integer: true, greater_than: 21, less_than: 65536 }, allow_blank: true
+  validates_format_of :reverse_service_db_socket_path,:with => /\A(localhost:\d+|\/[\w\-\.\=\+\/]*)\z/,
+                      :message  => 'is invalid as only \"localhost:nnnn\" or a full path with simple characters are accepted: a-z, A-Z, 0-9, _, +, =, . and of course /',
+                      :allow_blank => true
+  validates_format_of :reverse_service_ssh_agent_socket_path, :with => /\A\/[\w\-\.\=\+\/]*\z/,
+                      :message  => 'is invalid as only paths with simple characters are accepted: a-z, A-Z, 0-9, _, +, =, . and of course /',
+                      :allow_blank => true
+
+  validate :all_reverse_service_params_supplied
+
   def self.pretty_type #:nodoc:
     "Execution"
   end
@@ -118,11 +136,13 @@ class Bourreau < RemoteResource
       return false
     end
 
+puts_red "TRACE 1 START TUNNEL"
     unless self.start_tunnels
       self.operation_messages = "Could not start the SSH master connection."
       return false
     end
 
+puts_red "TRACE 2 CHECK BOURREAU"
     if self.is_alive?(:ping, true)
       self.operation_messages = "Bourreau already started."
       return true
@@ -139,6 +159,7 @@ class Bourreau < RemoteResource
     captfile = "/tmp/start.out.#{Process.pid}"
 
 if use_reverse_ssh?
+puts_red "TRACE 3 START TUNNEL PROCESS"
   start_reverse_ssh_command = "cd #{self.ssh_control_rails_dir.to_s.bash_escape}; script/cbrain_reverse_ssh cbrain_connect_server 2>&1"
   out = self.read_from_remote_shell_command(start_reverse_ssh_command) { |io| io.read() } rescue "popen exception"
   if out !~ /CBRAIN Reverse SSH Started/i # output of 'start_reverse_ssh'
@@ -150,6 +171,7 @@ end
     # SSH command to start it up; we pipe to it either a new database.yml file
     # which will be installed, or "" which means to use whatever
     # yml file is already configured at the other end.
+puts_red "TRACE 4 START BOURREAU PROCESS"
     start_command = "cd #{self.ssh_control_rails_dir.to_s.bash_escape}; script/cbrain_remote_ctl start -e #{myrailsenv.to_s.bash_escape} 2>&1"
     self.write_to_remote_shell_command(start_command, :stdout => captfile) { |io| io.write(db_yml) }
 
@@ -499,5 +521,22 @@ end
   end
 
   # NOTE: 'private' in effect here.
+
+  ############################################################################
+  # Validation callbacks
+  ############################################################################
+
+  public
+
+  def all_reverse_service_params_supplied
+    return true if ! self.use_reverse_service?
+
+    %i( reverse_service_user reverse_service_host reverse_service_port
+        reverse_service_db_socket_path reverse_service_ssh_agent_socket_path )
+    .each do |att|
+      errors.add( att, "cannot be blank if the option to use the reverse service is selected") if
+        self.send(att).blank?
+    end
+  end
 
 end

@@ -199,7 +199,7 @@
       <%= show_table(@bourreau, :as => :bourreau, :header => "Connection Configuration", :edit_condition => @bourreau.has_owner_access?(current_user)) do |t| %>
 
         <% t.edit_cell(:ssh_control_host, :header => "SSH Hostname") do |f| %>
-          <%= f.text_field :ssh_control_host %>
+          <%= f.text_field :ssh_control_host, :size => 20 %>
         <% end %>
 
         <% t.edit_cell(:ssh_control_rails_dir, :header => "Rails Server Directory") do |f| %>
@@ -207,7 +207,7 @@
         <% end %>
 
         <% t.edit_cell(:ssh_control_user, :header => "SSH User") do |f| %>
-          <%= f.text_field :ssh_control_user %>
+          <%= f.text_field :ssh_control_user, :size => 20 %>
         <% end %>
 
         <% t.edit_cell(:ssh_control_port, :header => "SSH Port") do |f| %>
@@ -215,7 +215,43 @@
         <% end %>
 
         <% t.edit_cell(:proxied_host, :header => "Second-level Hostname") do |f| %>
-          <%= f.text_field :proxied_host %>
+          <%= f.text_field :proxied_host, :size => 20 %>
+        <% end %>
+
+        <% t.edit_cell(:active_resource_control_port, :header => "Local Control Port") do |f| %>
+          <%= f.text_field :active_resource_control_port, :size => 6 %>
+        <% end %>
+
+      <% end %>
+
+      <%= show_table(@bourreau, :as => :bourreau, :header => "Optional Reverse Service Connection Configuration", :edit_condition => @bourreau.has_owner_access?(current_user)) do |t| %>
+
+        <% t.boolean_edit_cell('bourreau[use_reverse_service]', (@bourreau.use_reverse_service ? "1" : ""), "1", "0",
+           :header => "Use the SSH Reverse Service", :show_width => 2) %>
+
+        <% t.edit_cell(:reverse_service_host, :header => "Reverse Service Hostname", :show_width => 1) do |f| %>
+          <%= f.text_field :reverse_service_host, :size => 20 %>
+          <br>Default: <%= Socket.gethostname %>
+        <% end %>
+
+        <% t.edit_cell(:reverse_service_port, :header => "Reverse Service Port", :show_width => 1) do |f| %>
+          <%= f.text_field :reverse_service_port, :size => 6 %>
+        <% end %>
+
+        <% t.edit_cell(:reverse_service_user, :header => "Reverse Service User", :show_width => 1) do |f| %>
+          <%= f.text_field :reverse_service_user, :size => 20 %>
+          <br>Default: <%= CBRAIN::Rails_UserName %>
+        <% end %>
+
+        <% t.empty_cell %>
+
+        <% t.edit_cell(:reverse_service_db_socket_path, :header => "Reverse Service DB Socket Path", :show_width => 2) do |f| %>
+          <%= f.text_field :reverse_service_db_socket_path, :size => 60 %>
+        <% end %>
+
+        <% t.edit_cell(:reverse_service_ssh_agent_socket_path, :header => "Reverse Service SSH Agent Socket Path", :show_width => 2) do |f| %>
+          <%= f.text_field :reverse_service_ssh_agent_socket_path, :size => 60 %>
+          <br>Default: <%= SshAgent.find_current&.socket %>
         <% end %>
 
       <% end %>

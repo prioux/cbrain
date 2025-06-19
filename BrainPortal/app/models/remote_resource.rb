@@ -69,24 +69,26 @@ class RemoteResource < ApplicationRecord
   validate              :proper_dp_ignore_patterns
   validate              :dp_cache_path_valid
 
-  validates_format_of   :cms_shared_dir, :with => /\A[\w\-\.\=\+\/]*\z/,
-                        :message  => 'is invalid as only paths with simple characters are valid: a-z, A-Z, 0-9, _, +, =, . and of course /',
+  validates_format_of   :cms_shared_dir, :with => /\A\/[\w\-\.\=\+\/]*\z/,
+                        :message  => 'is invalid as only paths with simple characters are accepted: a-z, A-Z, 0-9, _, +, =, . and of course /',
                         :allow_blank => true
 
-  validates_format_of   :dp_cache_dir, :with => /\A[\w\-\.\=\+\/]*\z/,
-                        :message  => 'is invalid as only paths with simple characters are valid: a-z, A-Z, 0-9, _, +, =, . and of course /',
+  validates_format_of   :dp_cache_dir, :with => /\A\/[\w\-\.\=\+\/]*\z/,
+                        :message  => 'is invalid as only paths with simple characters are accepted: a-z, A-Z, 0-9, _, +, =, . and of course /',
                         :allow_blank => true
 
   validates_format_of   :ssh_control_user, :with => /\A\w[\w\-\.]*\z/,
-                        :message  => 'is invalid as only the following characters are valid: alphanumeric characters, _, -, and .',
+                        :message  => 'is invalid as only the following characters are accepted: alphanumeric characters, _, -, and .',
                         :allow_blank => true
 
   validates_format_of   :ssh_control_host, :with => /\A\w[\w\-\.]*\z/,
-                        :message  => 'is invalid as only the following characters are valid: alphanumeric characters, _, -, and .',
+                        :message  => 'is invalid as only the following characters are accepted: alphanumeric characters, _, -, and .',
                         :allow_blank => true
 
-  validates_format_of   :ssh_control_rails_dir, :with => /\A[\w\-\.\=\+\/]*\z/,
-                        :message  => 'is invalid as only paths with simple characters are valid: a-z, A-Z, 0-9, _, +, =, . and of course /',
+  validates             :ssh_control_port, numericality: { only_integer: true, greater_than: 21, less_than: 65536 }, allow_blank: true
+
+  validates_format_of   :ssh_control_rails_dir, :with => /\A\/[\w\-\.\=\+\/]*\z/,
+                        :message  => 'is invalid as only paths with simple characters are accepted: a-z, A-Z, 0-9, _, +, =, . and of course /',
                         :allow_blank => true
 
   belongs_to            :user
@@ -238,9 +240,9 @@ puts_red "DEV TODO #{caller[0]}"
     ssh_options = (self.meta[:ssh_config_options].presence || {})
                   .dup.merge( :ForwardAgent => use_agent )
     # category: we add the UNIX userid so as not to conflict
-    # with any other user on the system when creating out socket in /tmp
+    # with any other user on the system when creating our socket in /tmp
     category = "#{self.class}_#{Process.uid}"
-    uniq     = "#{self.id}"
+    uniq     = "#{CBRAIN::SelfRemoteResourceId}_#{self.id}"
     master   = SshMaster.find_or_create(self.ssh_control_user,self.ssh_control_host,self.ssh_control_port || 22,
                :category => category, :uniq => uniq, :ssh_config_options => ssh_options )
     master
@@ -281,11 +283,12 @@ puts_red "DEV TODO #{caller[0]}"
     end
 
     # Setup ActiveResource forward tunnel
+    local_port = self.default_active_resource_port
     master.add_tunnel(:forward,
-      "#{Rails.root}/tmp/sockets/#{self.name}.sock",
+      #"#{Rails.root}/tmp/sockets/#{self.name}.sock",
+      local_port,
       nil, # nil is important here
-      (Pathname.new(self.ssh_control_rails_dir) + "tmp/sockets/bourreau.sock").to_s,
-      nil, # nil is important here too
+      (Pathname.new(self.ssh_control_rails_dir) + "tmp/sockets/bourreau.sock").to_s
     )
 
     # If the SSH master and tunnels have already been started by
@@ -434,12 +437,17 @@ puts_red "DEV TODO #{caller[0]}"
   # Returns this RemoteResource's URL. This URL maps to a
   # connection tunnelled through a SSH master connection.
   # The connection is established to host localhost, on a port
-  # number equal to (3090 + the ID of the resource).
+  # number specified by the admin at config time.
   def site
     host = "localhost"
-    port = 3090+self.id  # see also in start_tunnels()
+    port = self.default_active_resource_port
     "http://#{host}:#{port}"
-    "unix_socket:/#{Rails.root}/tmp/sockets/#{self.name}.sock"
+  end
+
+  # Fetches from the attribute active_resource_local_port but provides
+  # a default of (3090+id)
+  def default_active_resource_port #:nodoc:
+    self.active_resource_control_port.presence || 3090+self.id
   end
 
   # Returns a RemoteResourceInfo object describing the
