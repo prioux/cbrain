@@ -77,9 +77,13 @@ ssh -q -n -N -x -f -p "$port" "$user@$host" \
   -o ForwardAgent=No                        \
   -o ForwardX11=No                          \
   -o ExitOnForwardFailure=Yes               \
-  -L "$database_sock":"$dpspec"             \
-  -L "$sshagent_sock":"$sshagentspec"       \
-  || ( echo "Failed to start SSH connection back to CBRAIN service host" && exit 20 )
+  -L "$database_sock":"$dbspec"             \
+  -L "$sshagent_sock":"$sshagentspec"
+
+status=$!
+if test $status -ne 0 ; then
+  fatal "Failed to start SSH connection back to CBRAIN service host"
+fi
 
 echo "CBRAIN Reverse SSH Started" # this sentence is checked by the portal
 exit 0
