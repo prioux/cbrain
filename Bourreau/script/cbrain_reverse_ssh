@@ -73,7 +73,8 @@ sshagent_sock="$rails_home"/tmp/sockets/ssh_agent.sock
 rm -f "$database_sock" "$sshagent_sock"
 
 # Start the main SSH tunnel back to the service host
-ssh -q -n -N -x -f -p "$port" "$user@$host" \
+ssh -n -N -x -f -p "$port" "$user@$host"    \
+  -o BatchMode=Yes                          \
   -o ForwardAgent=No                        \
   -o ForwardX11=No                          \
   -o ExitOnForwardFailure=Yes               \
