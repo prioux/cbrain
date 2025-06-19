@@ -80,7 +80,7 @@ ssh -q -n -N -x -f -p "$port" "$user@$host" \
   -L "$database_sock":"$dbspec"             \
   -L "$sshagent_sock":"$sshagentspec"
 
-status=$!
+status=$?
 if test $status -ne 0 ; then
   fatal "Failed to start SSH connection back to CBRAIN service host"
 fi
