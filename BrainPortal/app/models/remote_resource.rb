@@ -258,7 +258,9 @@ class RemoteResource < ApplicationRecord
     master.delete_tunnels(:reverse)
 
     # Reverse SSH is an alternate mechanism which handles the DB
-    # forwarding and the SSH Agent forwarding separately.
+    # forwarding and the SSH Agent forwarding separately. So if
+    # we are NOT using that mechanism, we need to setup a DB
+    # tunnel ourselves right now.
     if ! self.use_reverse_service?
       # Setup DB reverse tunnel
       myconfig        = self.class.current_resource_db_config

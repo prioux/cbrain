@@ -137,7 +137,7 @@ class Bourreau < RemoteResource
     end
 
 puts_red "TRACE 1 START TUNNEL"
-    unless self.start_tunnels
+    unless self.start_tunnels # this will detect and re-use an existing one, if any
       self.operation_messages = "Could not start the SSH master connection."
       return false
     end
@@ -146,6 +146,25 @@ puts_red "TRACE 2 CHECK BOURREAU"
     if self.is_alive?(:ping, true)
       self.operation_messages = "Bourreau already started."
       return true
+    end
+
+    # In the case of the alternate configurationw with
+    # a revserse service, we first run a program on the
+    # remote side called 'cbrain_reverse_ssh' which will
+    # try to establish a DB tunnel, and a SSH agent tunnel.
+    if self.use_reverse_service?
+puts_red "TRACE 3 START TUNNEL PROCESS"
+      rev_user    = self.reverse_service_user
+      rev_host    = self.reverse_service_host
+      rev_port    = self.reverse_service_port
+      rev_dbsock  = self.reverse_service_db_socket_path
+      rev_sshsock = self.reverse_service_ssh_agent_socket_path
+      start_reverse_ssh_command = "cd #{self.ssh_control_rails_dir.to_s.bash_escape}; script/cbrain_reverse_ssh #{rev_user.bash_escape} #{rev_host.bash_escape} #{rev_port.bash_escape} #{rev_dbsock.bash_escape} #{rev_sshsock.bash_escape} 2>&1"
+      out = self.read_from_remote_shell_command(start_reverse_ssh_command) { |io| io.read() } rescue "popen exception"
+      if out !~ /CBRAIN Reverse SSH Started/i # output of 'start_reverse_ssh'
+        self.operation_messages = "Could not start the reverse service process: captured output from 'cbrain_reverse_ssh':\n#{out}"
+        return false
+      end
     end
 
     # What environment will it run under?
@@ -157,21 +176,6 @@ puts_red "TRACE 2 CHECK BOURREAU"
 
     # File to capture command output.
     captfile = "/tmp/start.out.#{Process.pid}"
-
-if self.use_reverse_service?
-puts_red "TRACE 3 START TUNNEL PROCESS"
-  rev_user    = self.reverse_service_user
-  rev_host    = self.reverse_service_host
-  rev_port    = self.reverse_service_port
-  rev_dbsock  = self.reverse_service_db_socket_path
-  rev_sshsock = self.reverse_service_ssh_agent_socket_path
-  start_reverse_ssh_command = "cd #{self.ssh_control_rails_dir.to_s.bash_escape}; script/cbrain_reverse_ssh #{rev_user.bash_escape} #{rev_host.bash_escape} #{rev_port.bash_escape} #{rev_dbsock.bash_escape} #{rev_sshsock.bash_escape} 2>&1"
-  out = self.read_from_remote_shell_command(start_reverse_ssh_command) { |io| io.read() } rescue "popen exception"
-  if out !~ /CBRAIN Reverse SSH Started/i # output of 'start_reverse_ssh'
-    self.operation_messages = "bad bad #{out}"
-    return false
-  end
-end
 
     # SSH command to start it up; we pipe to it either a new database.yml file
     # which will be installed, or "" which means to use whatever

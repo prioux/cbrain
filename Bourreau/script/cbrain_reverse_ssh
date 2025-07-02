@@ -66,10 +66,10 @@ curhost=$(hostname -s)    # not used yet
 rails_home=$(realpath $PWD)
 
 # Local socket names that we will establish here
-database_sock="$rails_home"/tmp/sockets/db.reverse.sock
-sshagent_sock="$rails_home"/tmp/sockets/ssh_agent.sock
+database_sock="$rails_home"/tmp/sockets/db.$curhost.remote_ssh.sock
+sshagent_sock="$rails_home"/tmp/sockets/ssa.$curhost.remote_ssh.sock
 
-# TMP; handle better in future
+# TMP; handle better in future? What if these sockets are already active?
 rm -f "$database_sock" "$sshagent_sock"
 
 # Start the main SSH tunnel back to the service host
@@ -87,5 +87,7 @@ if test $status -ne 0 ; then
 fi
 
 echo "CBRAIN Reverse SSH Started" # this sentence is checked by the portal
+echo "Database socket:  $database_sock through SSH to $dbspec"
+echo "SSH Agent socket: $sshagent_sock through SSH to $sshagentspec"
 exit 0
 

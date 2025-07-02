@@ -226,6 +226,20 @@
 
       <%= show_table(@bourreau, :as => :bourreau, :header => "Optional Reverse Service Connection Configuration", :edit_condition => @bourreau.has_owner_access?(current_user)) do |t| %>
 
+        <% t.row() do %>
+          <p class="medium_paragraphs">
+          This is an alternate mechanism to provide the Bourreau with a distinct database and SSH agent connection. For this to work,
+          an SSH-accessible server (provided by hostname, port number and username) must be configured to accept the main CBRAIN portal
+          key, and be visible from the Bourreau. That server must have a SSH agent that provides keys on a UNIX domain socket,
+          and a database connection for CBRAIN. The database connection specification can be provided as either as a full path
+          to a UNIX domain socket, or as <em>localhost:port</em>.
+          </p>
+          <p class="medium_paragraphs">
+          Some <strong>default values</strong> shown under the input boxes are <em>guesses</em> based on the currently running Portal. These
+          are useful if the portal happens to be the server to connect back to.
+          </p>
+        <% end %>
+
         <% t.boolean_edit_cell('bourreau[use_reverse_service]', (@bourreau.use_reverse_service ? "1" : ""), "1", "0",
            :header => "Use the SSH Reverse Service", :show_width => 2) %>
 
@@ -247,6 +261,8 @@
 
         <% t.edit_cell(:reverse_service_db_socket_path, :header => "Reverse Service DB Socket Path", :show_width => 2) do |f| %>
           <%= f.text_field :reverse_service_db_socket_path, :size => 60 %>
+          <% db_host = ApplicationRecord.connection.raw_connection.query_options[:host] rescue nil %>
+          <br>Default: <%= db_host == 'localhost' ? 'localhost:3306' : db_host.nil? ? '(Unknown, check your config)' : db_host %>
         <% end %>
 
         <% t.edit_cell(:reverse_service_ssh_agent_socket_path, :header => "Reverse Service SSH Agent Socket Path", :show_width => 2) do |f| %>
