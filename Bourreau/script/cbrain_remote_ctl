@@ -197,10 +197,15 @@ else
   if test "X$sockfile" = "X" ; then
     fatal "Could not find a DB socket in tmp/sockets/db.*.sock"
   fi
+  if ! check_unix_socket "$sockfile" ; then
+    fatal "Found DB socket '$sockfile' but it doesn't seem to be connected."
+  fi
 fi
+sockfile=$(realpath "$sockfile")
 
 # Erase older DB socket files
 for badsock in tmp/sockets/db.*.sock ; do
+  badsock=$(realpath "$badsock")
   test "X$badsock" = "X$sockfile" && continue # skip good one
   rm -f "$badsock"
 done
@@ -220,12 +225,12 @@ if test -s $db_file ; then
   # This takes the current file's content and makes the substitution in it.
   # Mostly used in 'console' mode but it can happen in 'start' mode if
   # a developer has installed manually a DB file.
-  cat $db_file | sed -e 's@socket:.*@socket: '"$rails_home/$sockfile"'@' > $db_file.tmp
+  cat $db_file | sed -e 's@socket:.*@socket: '"$sockfile"'@' > $db_file.tmp
   mv -f $db_file.tmp $db_file
 else
   # This gets the file's content from STDIN and makes the substitution in it before writing.
   # Only used in 'start' mode.
-  cat | sed -e 's@socket:.*@socket: '"$rails_home/$sockfile"'@' > $db_file
+  cat | sed -e 's@socket:.*@socket: '"$sockfile"'@' > $db_file
 fi
 
 
