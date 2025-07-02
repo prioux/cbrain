@@ -161,6 +161,7 @@ puts_red "TRACE 3 START TUNNEL PROCESS"
       rev_sshsock = self.reverse_service_ssh_agent_socket_path
       start_reverse_ssh_command = "cd #{self.ssh_control_rails_dir.to_s.bash_escape}; script/cbrain_reverse_ssh #{rev_user.bash_escape} #{rev_host.bash_escape} #{rev_port.bash_escape} #{rev_dbsock.bash_escape} #{rev_sshsock.bash_escape} 2>&1"
       out = self.read_from_remote_shell_command(start_reverse_ssh_command) { |io| io.read() } rescue "popen exception"
+puts_green out
       if out !~ /CBRAIN Reverse SSH Started/i # output of 'start_reverse_ssh'
         self.operation_messages = "Could not start the reverse service process: captured output from 'cbrain_reverse_ssh':\n#{out}"
         return false
@@ -186,6 +187,7 @@ puts_red "TRACE 4 START BOURREAU PROCESS"
 
     out = File.read(captfile) rescue ""
     File.unlink(captfile) rescue true
+puts_green out
     if out =~ /Bourreau Started/i # output of 'cbrain_remote_ctl'
       self.operation_messages = "Execution Server #{self.name} started.\n" +
                                 "Command: #{start_command}\n" +

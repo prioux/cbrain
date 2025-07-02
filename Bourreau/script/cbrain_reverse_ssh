@@ -27,7 +27,14 @@
 
 # Usage
 function usage {
-  echo "Usage: $0 xxxxx"
+  echo "Usage: $0 remoteuser remotehost remoteport db_spec sshagent_spec"
+  echo ""
+  echo "remoteuser, remotehost and remoteport are the standard SSH connection parameters."
+  echo ""
+  echo "db_spec can be a string like 'localhost:3306' (or any dbhost and port accessible from remotehost)"
+  echo "or a UNIX domain socket on remotehost."
+  echo ""
+  echo "sshagent_spec can only be UNIX domain socket on remotehost."
   exit 10
 }
 
@@ -35,6 +42,17 @@ function usage {
 function fatal {
   echo "$*"
   exit 20
+}
+
+# Returns true if we can find the socketpath (which must
+# exists on the filesystem) among the list of those bound
+# to a process. Hopefully this works on Linux as well as MacOS.
+function check_unix_socket {
+  socketpath=$(realpath $1 2>/dev/null)
+  if ! test -S "$socketpath" ; then
+    return 1 # nope
+  fi
+  lsof -w -a -U -u$USER | grep -q "$socketpath" # grep will return 0 or 1
 }
 
 # Print usage if zero args, or -h or --help
@@ -69,10 +87,17 @@ rails_home=$(realpath $PWD)
 database_sock="$rails_home"/tmp/sockets/db.$curhost.remote_ssh.sock
 sshagent_sock="$rails_home"/tmp/sockets/ssa.$curhost.remote_ssh.sock
 
-# TMP; handle better in future? What if these sockets are already active?
+if check_unix_socket "$database_sock" && check_unix_socket "$sshagent_sock" ; then
+  echo "Oh wow, it seems the reverse connection process is still operating. Using it!"
+  echo "CBRAIN Reverse SSH Started" # this sentence is checked by the portal
+  exit 0
+fi
+
+# Okay, clean up and restart the SSH process
 rm -f "$database_sock" "$sshagent_sock"
 
 # Start the main SSH tunnel back to the service host
+echo "Attempting to start a new SSH master to $user@$host:$port"
 ssh -n -N -x -f -p "$port" "$user@$host"    \
   -o BatchMode=Yes                          \
   -o ForwardAgent=No                        \
