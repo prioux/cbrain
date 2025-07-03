@@ -120,40 +120,48 @@ class Bourreau < RemoteResource
   # *ssh_control_rails_dir*:: Mandatory
   #
   def start
-    self.operation_messages = "Unknown internal error."
+    self.operation_messages = ""
 
     self.online = true
 
     self.zap_info_cache
 
+    # Utility to append to a temporary internal log
+    # a bunch of useful messages.
+    logit = ->(message, step=nil) do
+       self.operation_messages += "=====================================\n"
+       self.operation_messages += Time.now.localtime.strftime "[%Y-%m-%d %H:%M:%S %Z]"
+       self.operation_messages += " (#{step}) " if step.present?
+       self.operation_messages += (message.strip + "\n")
+    end
+
     unless self.has_remote_control_info?
-      self.operation_messages = "Not configured for remote control: missing user/host."
+      logit.( "Not configured for remote control: missing user/host." )
       return false
     end
 
     unless RemoteResource.current_resource.is_a?(BrainPortal)
-      self.operation_messages = "Only a Portal can start a Bourreau."
+      logit.( "Only a Portal can start a Bourreau." )
       return false
     end
 
-puts_red "TRACE 1 START TUNNEL"
     unless self.start_tunnels # this will detect and re-use an existing one, if any
-      self.operation_messages = "Could not start the SSH master connection."
+      logit.( "Could not start the SSH process.", "Start SSH Master" )
       return false
     end
+    logit.( "Main SSH tunnel started successfully", "Start SSH Master" )
 
-puts_red "TRACE 2 CHECK BOURREAU"
     if self.is_alive?(:ping, true)
-      self.operation_messages = "Bourreau already started."
+      logit.( "Bourreau process was found to be already running.", "Check Bourreau Process" )
       return true
     end
 
-    # In the case of the alternate configurationw with
-    # a revserse service, we first run a program on the
+    # In the case of the alternate configuration with
+    # a reverse service, we first run a program on the
     # remote side called 'cbrain_reverse_ssh' which will
-    # try to establish a DB tunnel, and a SSH agent tunnel.
+    # try to establish (or rediscover) a separate SSH process
+    # with a DB tunnel and a SSH agent tunnel.
     if self.use_reverse_service?
-puts_red "TRACE 3 START TUNNEL PROCESS"
       rev_user    = self.reverse_service_user
       rev_host    = self.reverse_service_host
       rev_port    = self.reverse_service_port
@@ -161,11 +169,12 @@ puts_red "TRACE 3 START TUNNEL PROCESS"
       rev_sshsock = self.reverse_service_ssh_agent_socket_path
       start_reverse_ssh_command = "cd #{self.ssh_control_rails_dir.to_s.bash_escape}; script/cbrain_reverse_ssh #{rev_user.bash_escape} #{rev_host.bash_escape} #{rev_port.bash_escape} #{rev_dbsock.bash_escape} #{rev_sshsock.bash_escape} 2>&1"
       out = self.read_from_remote_shell_command(start_reverse_ssh_command) { |io| io.read() } rescue "popen exception"
-puts_green out
-      if out !~ /CBRAIN Reverse SSH Started/i # output of 'start_reverse_ssh'
-        self.operation_messages = "Could not start the reverse service process: captured output from 'cbrain_reverse_ssh':\n#{out}"
-        return false
-      end
+      all_ok = (out =~ /CBRAIN Reverse SSH Started/i) # from output of 'cbrain_reverse_ssh'
+      logit.( "Remote SSH process #{all_ok ? 'started' : 'failed to start'}.\n" +
+              "Command: #{start_reverse_ssh_command}\n" +
+              "---Start Of Output---\n#{out.strip}\n---End Of Output---\n",
+              "Start Reverse Service" )
+      return false if ! all_ok
     end
 
     # What environment will it run under?
@@ -181,24 +190,24 @@ puts_green out
     # SSH command to start it up; we pipe to it either a new database.yml file
     # which will be installed, or "" which means to use whatever
     # yml file is already configured at the other end.
-puts_red "TRACE 4 START BOURREAU PROCESS"
+    CBRAIN.with_unlocked_agent # in case the agent was relocked while cbrain_reverse_ssh was setting up
     start_command = "cd #{self.ssh_control_rails_dir.to_s.bash_escape}; script/cbrain_remote_ctl start -e #{myrailsenv.to_s.bash_escape} 2>&1"
     self.write_to_remote_shell_command(start_command, :stdout => captfile) { |io| io.write(db_yml) }
 
     out = File.read(captfile) rescue ""
     File.unlink(captfile) rescue true
-puts_green out
-    if out =~ /Bourreau Started/i # output of 'cbrain_remote_ctl'
-      self.operation_messages = "Execution Server #{self.name} started.\n" +
-                                "Command: #{start_command}\n" +
-                                "Output:\n---Start Of Output---\n#{out}\n---End Of Output---\n"
+    all_ok = (out =~ /Bourreau Started/i) # from output of 'cbrain_remote_ctl'
+    logit.( "Execution Server #{self.name} #{all_ok ? 'started' : 'failed'}.\n" +
+            "Command: #{start_command}\n" +
+            "Output:\n---Start Of Output---\n#{out.strip}\n---End Of Output---\n",
+            "Start Bourreau Process" )
+    if all_ok
       self.save
       return true
     end
-    self.operation_messages = "Remote control command for #{self.name} failed.\n" +
-                              "Command: #{start_command}\n" +
-                              "Output:\n---Start Of Output---\n#{out}\n---End Of Output---\n"
     return false
+  ensure
+    Rails.logger.debug self.operation_messages if self.operation_messages.present?
   end
 
   # Stop a Bourreau remotely. The requirements for this to work are

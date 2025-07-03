@@ -99,6 +99,7 @@ rm -f "$database_sock" "$sshagent_sock"
 # Start the main SSH tunnel back to the service host
 echo "Attempting to start a new SSH master to $user@$host:$port"
 ssh -n -N -x -f -p "$port" "$user@$host"    \
+  -o SendEnv=CbrainReverse                  \
   -o BatchMode=Yes                          \
   -o ForwardAgent=No                        \
   -o ForwardX11=No                          \
