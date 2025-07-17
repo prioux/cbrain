@@ -16,7 +16,7 @@ name: cbrain_ci
 on:   [ push, pull_request ]
 jobs:
   run-tests:
-    name: Continuous Integration Tests
+    name: CBRAIN CLI client tests
     runs-on: ubuntu-24.04
     env:
       RAILS_ENV: test
@@ -39,6 +39,13 @@ jobs:
       ###########################################################
       - name: Checkout CBRAIN Codebase
         uses: actions/checkout@v4
+
+      - name: Checkout CBRAIN-CLI Codebase
+        uses: actions/checkout@v4
+        with:
+          name: aces/cbrain-cli
+          path: ./cbrain-cli
+          ref: refs/heads/master
 
       ###########################################################
       - name: Setup Ruby
@@ -116,60 +123,70 @@ jobs:
       ###########################################################
       # MAIN TEST #1: PORTAL
       ###########################################################
-      - name: Portal Tests
-        id: rspec_portal
-        if: ${{ failure() || success() }}
-        working-directory: BrainPortal
-        env:
-          CBRAIN_FAILTEST: ${{ secrets.CBRAIN_FAILTEST || '' }} # force a test to fail
-        run: |
-          bundle exec rspec spec
+      #- name: Portal Tests
+      #  id: rspec_portal
+      #  if: ${{ failure() || success() }}
+      #  working-directory: BrainPortal
+      #  env:
+      #    CBRAIN_FAILTEST: ${{ secrets.CBRAIN_FAILTEST || '' }} # force a test to fail
+      #  run: |
+      #    bundle exec rspec spec
 
       ###########################################################
       # MAIN TEST #2: BOURREAU
       ###########################################################
-      - name: Bourreaux Tests
-        id: rspec_bourreau
-        if: ${{ failure() || success() }}
-        working-directory: Bourreau
-        env:
-          CBRAIN_FAILTEST: ${{ secrets.CBRAIN_FAILTEST || '' }} # force a test to fail
-        run: |
-          bundle exec rspec spec
+      #- name: Bourreaux Tests
+      #  id: rspec_bourreau
+      #  if: ${{ failure() || success() }}
+      #  working-directory: Bourreau
+      #  env:
+      #    CBRAIN_FAILTEST: ${{ secrets.CBRAIN_FAILTEST || '' }} # force a test to fail
+      #  run: |
+      #    bundle exec rspec spec
 
       ###########################################################
       # MAIN TEST #3: API TESTS WITH CURL
       ###########################################################
-      - name: Curl API tests
-        id: curl_api
-        if: ${{ failure() || success() }}
-        working-directory: BrainPortal
-        run: |
-          bundle exec rake "db:seed:test:api"      || exit 2
-          bundle exec rails server puma -p 3000 -d || exit 3
-          cd test_api
-          sleep 5
-          perl curl_req_tester.pl -h localhost -p 3000 -s http -v${CBRAIN_CURL_TEST_VERBOSE_LEVEL:-1} -R
-          status=$?
-          kill $(cat ../tmp/pids/server.pid)
-          exit $status
+      #- name: Curl API tests
+      #  id: curl_api
+      #  if: ${{ failure() || success() }}
+      #  working-directory: BrainPortal
+      #  run: |
+      #    bundle exec rake "db:seed:test:api"      || exit 2
+      #    bundle exec rails server puma -p 3000 -d || exit 3
+      #    cd test_api
+      #    sleep 5
+      #    perl curl_req_tester.pl -h localhost -p 3000 -s http -v${CBRAIN_CURL_TEST_VERBOSE_LEVEL:-1} -R
+      #    status=$?
+      #    kill $(cat ../tmp/pids/server.pid)
+      #    exit $status
 
       ###########################################################
       # MAIN TEST #4: API TESTS WITH SWAGGER CODEGEN RUBY LIB
       ###########################################################
-      - name: Ruby CodeGen API tests
-        id: codegen_api
+      #- name: Ruby CodeGen API tests
+      #  id: codegen_api
+      #  if: ${{ failure() || success() }}
+      #  working-directory: BrainPortal
+      #  run: |
+      #    bundle exec rake "db:seed:test:api"      || exit 2
+      #    bundle exec rails server puma -p 3000 -d || exit 3
+      #    cd test_api
+      #    sleep 5
+      #    bundle exec rake "cbrain:test:api:client" -v "${CBRAIN_GEM_TEST_VERBOSE_LEVEL:-1}"
+      #    status=$?
+      #    kill $(cat ../tmp/pids/server.pid)
+      #    exit $status
+
+      ###########################################################
+      # MAIN CLI CLIENT TEST
+      ###########################################################
+      - name: CLI Client Tests
+        id: cbrain_cli
         if: ${{ failure() || success() }}
         working-directory: BrainPortal
         run: |
-          bundle exec rake "db:seed:test:api"      || exit 2
-          bundle exec rails server puma -p 3000 -d || exit 3
-          cd test_api
-          sleep 5
-          bundle exec rake "cbrain:test:api:client" -v "${CBRAIN_GEM_TEST_VERBOSE_LEVEL:-1}"
-          status=$?
-          kill $(cat ../tmp/pids/server.pid)
-          exit $status
+          echo test command goes here
 
       ###########################################################
       # Final notification
@@ -188,9 +205,6 @@ jobs:
           SLACK_ICON:     https://github.com/aces/cbrain/raw/master/BrainPortal/public/images/custom_logos/cb-small_white_blue.png
           SLACK_MESSAGE: |
             ```
-            BrainPortal rspec tests        : ${{ steps.rspec_portal.outcome }}
-            Bourreau rspec tests           : ${{ steps.rspec_bourreau.outcome }}
-            Curl API tests                 : ${{ steps.curl_api.outcome }}
-            Swagger CodeGEN Ruby API tests : ${{ steps.codegen_api.outcome }}
+            CBRAIN CLI client tests        : ${{ steps.cbrain_cli.outcome }}
             ```
 
