@@ -43,7 +43,7 @@ jobs:
       - name: Checkout CBRAIN-CLI Codebase
         uses: actions/checkout@v4
         with:
-          name: aces/cbrain-cli
+          repository: aces/cbrain-cli
           path: ./cbrain-cli
           ref: refs/heads/master
 
@@ -186,7 +186,8 @@ jobs:
         if: ${{ failure() || success() }}
         working-directory: BrainPortal
         run: |
-          echo test command goes here
+          ls -la
+          git remove -v
 
       ###########################################################
       # Final notification
