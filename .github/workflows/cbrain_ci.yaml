@@ -184,10 +184,11 @@ jobs:
       - name: CLI Client Tests
         id: cbrain_cli
         if: ${{ failure() || success() }}
-        working-directory: BrainPortal
         run: |
-          ls -la
-          git remove -v
+          ls -lA
+          cd cbrain-cli
+          ls -lA
+          git remote -v
 
       ###########################################################
       # Final notification
