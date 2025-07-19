@@ -187,6 +187,7 @@ jobs:
         run: |
           ls -lA
           cd cbrain-cli
+          chmod 755 cbrain
           ./cbrain --help
 
       ###########################################################
