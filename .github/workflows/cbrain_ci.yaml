@@ -185,10 +185,15 @@ jobs:
         id: cbrain_cli
         if: ${{ failure() || success() }}
         run: |
-          ls -lA
+          echo $HOME
+          mkdir -p $HOME/.config/cbrain
+          bash .github/workflows/scripts/create_cbrain_test_session.sh >$HOME/.config/cbrain/credentials.json
           cd cbrain-cli
-          chmod 755 cbrain
-          ./cbrain --help
+          PATH="$PWD:$PATH"
+          chmod 755 cbrain # temporary; the github repo should have it at 755
+          cbrain --help
+          cbrain whoami
+          cbrain files list
 
       ###########################################################
       # Final notification
