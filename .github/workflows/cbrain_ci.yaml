@@ -185,12 +185,14 @@ jobs:
         id: cbrain_cli
         if: ${{ failure() || success() }}
         run: |
+          cd BrainPortal
           bundle exec rake "db:seed:test:api"      || exit 2
           bundle exec rails server puma -p 3000 -d || exit 3
+          cd ..
+          sleep 5 # we need a better way
           echo $HOME
           mkdir -p $HOME/.config/cbrain
           bash .github/workflows/scripts/create_cbrain_test_session.sh >$HOME/.config/cbrain/credentials.json
-          sleep 5
           cd test_api
           cd cbrain-cli
           PATH="$PWD:$PATH"
