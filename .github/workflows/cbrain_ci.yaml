@@ -193,7 +193,6 @@ jobs:
           echo $HOME
           mkdir -p $HOME/.config/cbrain
           bash .github/workflows/scripts/create_cbrain_test_session.sh >$HOME/.config/cbrain/credentials.json
-          cd test_api
           cd cbrain-cli
           PATH="$PWD:$PATH"
           chmod 755 cbrain # temporary; the github repo should have it at 755
