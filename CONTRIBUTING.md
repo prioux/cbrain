@@ -23,7 +23,7 @@ When providing a *Pull Request*, do not repeat the description of a problem if i
 Here are examples of straightforward, practical descriptions:
 
 * [Pull Request 1581](https://github.com/aces/cbrain/pull/1581).
-* [Issue 1568](https://github.com/aces/cbrain/issues/1568) which also has an associated [Pull Request 1573](https://github.com/aces/cbrain/pull/1573).
+* [Issue 1568](https://github.com/aces/cbrain/issues/1568) which also has an associated [Pull Request 1573](https://github.com/aces/cbrain/pull/1573)
 
 ## Start your modifications at the HEAD of one of the two branches.
 
@@ -43,7 +43,7 @@ or suppresing blank lines around them, as needed, and adjusting comment blocks.
 We don't want screenshots of your terminal or console commands. The only times that
 screenshots are justified is when you are working on the web user interface.
 
-Use proper mark down when you need to quote Ruby code or shell commands.
+Use proper Markdown when you need to quote Ruby code or shell commands.
 See the Pull Request 1581 link above for and example of a comment with a Ruby code block.
 
 ## Add comments that explain the flow of the logic of your code.
@@ -62,7 +62,7 @@ The codebase is not all that consistent, but look around.
 
 We also have a [programming style guide](https://github.com/aces/cbrain/wiki/Programming-Style).
 
-Your code *MUST* be written in plain UTF-8 text with only the _linefeed_ character (ASCII 10, as in `\n`) as your line terminator. We do no accept Windows-style line terminators (carriage return + linefeed, `\r\n`), because we're UNIX developers. And the last line of a file, if not blank, must also end with a _linefeed_ .
+Your code *MUST* be written in plain UTF-8 text with only the _linefeed_ character (ASCII 10, as in `\n`) as your line terminator. We do no accept Windows-style line terminators (carriage return + linefeed, `\r\n`), because we're UNIX developers.
 
 ## Be nice.
 
