@@ -102,7 +102,6 @@ Rails.application.routes.draw do
       post 'stop'
       get  'row_data'
       get  'info'
-      get  'cache_disk_usage'
     end
     collection do
       get  'load_info'
