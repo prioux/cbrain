@@ -984,15 +984,11 @@ class RemoteResource < ApplicationRecord
        num_workers && num_workers >= 0 && num_workers < 21
 
     worker_name = "BacWorker"
-    baclogger = Log4r::Logger[worker_name]
-    unless baclogger
-      baclogger = Log4r::Logger.new(worker_name)
-      baclogger.add(Log4r::RollingFileOutputter.new('background_activity_outputter',
-                    :filename  => "#{Rails.root}/log/#{worker_name}.combined..log",
-                    :formatter => Log4r::PatternFormatter.new(:pattern => "%d %l %m"),
-                    :maxsize   => 1000000, :trunc => 600000))
-      baclogger.level = Log4r::INFO
+    baclogger = Logger.new("#{Rails.root}/log/#{worker_name}.combined.log", 100, 1000000)
+    baclogger.formatter = Proc.new do |severity, time, progname, msg|
+      sprintf("%s %s %s\n",time.strftime("%Y-%m-%d %H:%M:%S"),severity,msg)
     end
+    baclogger.level = :info
 
     WorkerPool.create_or_find_pool(BackgroundActivityWorker,
        num_workers, # number of instances

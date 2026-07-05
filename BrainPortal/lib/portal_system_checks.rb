@@ -245,13 +245,15 @@ class PortalSystemChecks < CbrainChecker #:nodoc:
 
     puts "P> \t- No locker processes found. Creating one."
 
-    al_logger = Log4r::Logger.new('AgentLocker')
-    al_logger.add(Log4r::RollingFileOutputter.new('agent_locker_outputter',
-                    :filename  => "#{Rails.root}/log/AgentLocker..log",
-                    :formatter => Log4r::PatternFormatter.new(:pattern => "%d %l %m"),
-                    :maxsize   => 1000000, :trunc => 600000))
-    al_logger.level = Log4r::INFO # Log4r::INFO or Log4r::DEBUG or other levels...
-    al_logger.level = Log4r::DEBUG if ENV['CBRAIN_DEBUG_TRACES'].present?
+    al_logger = Logger.new(
+      "#{Rails.root}/log/AgentLocker.log",
+      100, 1_048_576,  # up to 100 files, 1mb each
+    )
+    al_logger.formatter = Proc.new do |severity, time, progname, msg|
+      sprintf("%s %s %s\n",time.strftime("%Y-%m-%d %H:%M:%S"),severity,msg)
+    end
+    al_logger.level = 'info'
+    al_logger.level = 'debug'      if ENV['CBRAIN_DEBUG_TRACES'].present?
 
     WorkerPool.create_or_find_pool(PortalAgentLocker, 1,
       { :check_interval => 60,
