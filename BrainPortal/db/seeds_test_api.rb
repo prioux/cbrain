@@ -332,7 +332,7 @@ BrainPortal.first.delete
 po.save!
 
 %w( test_api test_api/bourreau test_api/bourreau/cache test_api/bourreau/gridshare ).each do |path|
-  Dir.mkdir("#{default_support_dir}/#{path}") unless Dir.exists?("#{default_support_dir}/#{path}")
+  Dir.mkdir("#{default_support_dir}/#{path}") unless Dir.exist?("#{default_support_dir}/#{path}")
 end
 
 bo = Bourreau.seed_record!(
@@ -380,7 +380,7 @@ Step 7: DataProvider
 STEP
 
 %w( test_api test_api/localdp ).each do |path|
-  Dir.mkdir("#{default_support_dir}/#{path}") unless Dir.exists?("#{default_support_dir}/#{path}")
+  Dir.mkdir("#{default_support_dir}/#{path}") unless Dir.exist?("#{default_support_dir}/#{path}")
 end
 
 dp = FlatDirLocalDataProvider.seed_record!(

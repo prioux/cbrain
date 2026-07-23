@@ -20,7 +20,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-module CBRAINExtensions #:nodoc:
+module CbrainExtensions #:nodoc:
   module ActiveRecordExtensions #:nodoc:
 
     # ActiveRecord Added Behavior For Serialization of Attributes
@@ -43,9 +43,9 @@ module CBRAINExtensions #:nodoc:
         attlist = self.class.indifferent_attributes.keys
         attlist.each do |att|
           the_hash = read_attribute(att) # value of serialized attribute, as reconstructed by ActiveRecord
-          if the_hash.is_a?(Hash) && ! the_hash.is_a?(HashWithIndifferentAccess)
+          if the_hash.is_a?(Hash) && ! the_hash.is_a?(ActiveSupport::HashWithIndifferentAccess)
             #puts_blue "Oh oh, must fix #{self.class.name}-#{self.id} -> #{att}"
-            #new_hash = HashWithIndifferentAccess.new_from_hash_copying_default(the_hash)
+            #new_hash = ActiveSupport::HashWithIndifferentAccess.new_from_hash_copying_default(the_hash)
             new_hash = the_hash.with_indifferent_access
             to_update[att] = new_hash
           end

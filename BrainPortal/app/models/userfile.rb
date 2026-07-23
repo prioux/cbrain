@@ -287,7 +287,7 @@ class Userfile < ApplicationRecord
   # by +user+. Actually returns a ActiveRecord::Relation.
   def get_tags_for_user(user)
     user = User.find(user) unless user.is_a?(User)
-    self.tags.where(:user_id => user.id).or(self.tags.where(:user_id => User.admin.id, :group_id => Group.everyone.id, :name => [ 'QC_PASS', 'QC_FAIL', 'QC_UNKNOWN']))
+    self.tags.where('tags.user_id' => user.id)
   end
 
   # Set the tags associated with this file to those
@@ -908,7 +908,7 @@ class Userfile < ApplicationRecord
     public_file = Pathname.new(public_file.to_s).cleanpath
     raise "Public file path outside of userfile plugin." if public_file.absolute? || public_file.to_s =~ /\A\.\./
     base = base + public_file
-    return nil unless File.exists?((Rails.root + "public").to_s + base.to_s)
+    return nil unless File.exist?((Rails.root + "public").to_s + base.to_s)
     base
   end
 

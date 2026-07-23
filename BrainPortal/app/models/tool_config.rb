@@ -37,7 +37,7 @@ class ToolConfig < ApplicationRecord
 
   Revision_info=CbrainFileRevision[__FILE__] #:nodoc:
 
-  serialize       :env_array
+  serialize       :env_array, :coder => YAML
 
   belongs_to      :bourreau, :optional => true     # can be nil; it means it applies to all bourreaux
   belongs_to      :tool, :optional => true         # can be nil; it means it applies to all tools

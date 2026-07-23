@@ -878,9 +878,9 @@ class TasksController < ApplicationController
           end
 
           # MASS NEW STATUS
-          new_status  = PortalTask::OperationToNewStatus[operation] # from HTML form keyword to Task object keyword
+          new_status  = OperationToNewStatus[operation] # from HTML form keyword to Task object keyword
           oktasks = btasklist.select do |t|
-            PortalTask::AllowedOperationsHash[[t.status,new_status]]
+            AllowedOperationsHash[[t.status,new_status]]
           end
           if oktasks.size > 0
             bac_klass = operation_to_bac[operation]
@@ -1295,7 +1295,7 @@ class TasksController < ApplicationController
 
     # Prep temp file
     tmpdir = "/tmp/zenodo-upload-#{deposit.id}"
-    Dir.mkdir(tmpdir, 0700) unless Dir.exists?(tmpdir)
+    Dir.mkdir(tmpdir, 0700) unless Dir.exist?(tmpdir)
     content_path = "#{tmpdir}/#{filename}"
     File.open(content_path, "w:BINARY") { |fh| fh.write(text) }
 
@@ -1314,7 +1314,7 @@ class TasksController < ApplicationController
     cache   = filecollection.cache_full_path
     tmpdir  = "/tmp/zenodo-upload-#{deposit.id}"
     tmpbase = "#{tmpdir}/#{filecollection.name}.tar.gz"
-    Dir.mkdir(tmpdir, 0700) unless Dir.exists?(tmpdir)
+    Dir.mkdir(tmpdir, 0700) unless Dir.exist?(tmpdir)
     ret     = system "cd #{cache.parent.to_s.bash_escape} && tar -czf #{tmpbase} #{filecollection.name.bash_escape}"
     cb_error "Cannot create tmp tar file for FileCollection ##{filecollection.id}" unless ret
     tmpbase
@@ -1789,7 +1789,7 @@ class TasksController < ApplicationController
       return nil unless hash.is_a?(Hash)
 
       hash = hash.with_indifferent_access unless
-        hash.is_a?(HashWithIndifferentAccess)
+        hash.is_a?(ActiveSupport::HashWithIndifferentAccess)
 
       filter = self.new
       value = (hash['value'] || hash['v']).to_s.downcase
@@ -1820,6 +1820,106 @@ class TasksController < ApplicationController
         }
       )
     end
+  end
+
+  #####################################################################
+  # Task States Transition Tables (For validating user actions)
+  #####################################################################
+
+  private
+
+  # This associate one of the keywords we use in the interface
+  # to a task status that 'implements' the operation (basically,
+  # simply setting the task's status to the value modifies the
+  # task's state). This is used in the tasks controller.
+  OperationToNewStatus = {
+    # HTML page keyword   =>  New status
+    #------------------   -----------------
+    "hold"                => "On Hold",
+    "release"             => "Queued",
+    "suspend"             => "Suspended",
+    "resume"              => "On CPU",
+    "terminate"           => "Terminated",
+    "recover"             => "Recover",
+    "restart_setup"       => "Restart Setup",
+    "restart_cluster"     => "Restart Cluster",
+    "restart_postprocess" => "Restart PostProcess",
+    "duplicate"           => "Duplicated",
+    "archive"             => "ArchiveWorkdir",
+    "archive_file"        => "ArchiveWorkdirAsFile",
+    "unarchive"           => "UnarchiveWorkdir",
+    "zap_wd"              => "RemoveWorkdir",
+    "save_wd"             => "SaveWorkdir",
+  }
+
+  # In order to optimize the set of state transitions
+  # allowed in the tasks, this hash list when we can
+  # attempt to change the tasks states. This is
+  # used by the tasks controller so as not to send
+  # messages to Bourreaux to do stuff on tasks that
+  # are not ready for it anyway.
+  AllowedOperations = { # 'Destroy' is handled differently and separately
+
+    #===============================================================================
+    # Active states
+    #===============================================================================
+
+    # Current                          => List of states we can change to
+    #--------------------------------  ---------------------------------------------
+    "New"                              => [               "Terminated"              ],
+    "Queued"                           => [ "Duplicated", "Terminated", "On Hold"   ],
+    "On Hold"                          => [ "Duplicated", "Terminated", "Queued"    ],
+    "On CPU"                           => [ "Duplicated", "Terminated", "Suspended" ],
+    "Suspended"                        => [ "Duplicated", "Terminated", "On CPU"    ],
+
+    #===============================================================================
+    # Passive states
+    #===============================================================================
+
+    # Current                          => List of states we can change to
+    #--------------------------------  ---------------------------------------------
+    "Failed To Setup"                  => [ "Duplicated", "Recover", "ArchiveWorkdir", "ArchiveWorkdirAsFile", "UnarchiveWorkdir", "RemoveWorkdir", "SaveWorkdir" ],
+    "Failed On Cluster"                => [ "Duplicated", "Recover", "ArchiveWorkdir", "ArchiveWorkdirAsFile", "UnarchiveWorkdir", "RemoveWorkdir", "SaveWorkdir" ],
+    "Failed To PostProcess"            => [ "Duplicated", "Recover", "ArchiveWorkdir", "ArchiveWorkdirAsFile", "UnarchiveWorkdir", "RemoveWorkdir", "SaveWorkdir" ],
+    "Failed Setup Prerequisites"       => [ "Duplicated", "Recover", "ArchiveWorkdir", "ArchiveWorkdirAsFile", "UnarchiveWorkdir", "RemoveWorkdir", "SaveWorkdir" ],
+    "Failed PostProcess Prerequisites" => [ "Duplicated", "Recover", "ArchiveWorkdir", "ArchiveWorkdirAsFile", "UnarchiveWorkdir", "RemoveWorkdir", "SaveWorkdir" ],
+    "Terminated"                       => [ "Duplicated", "Restart Setup", "ArchiveWorkdir", "ArchiveWorkdirAsFile", "UnarchiveWorkdir", "RemoveWorkdir", "SaveWorkdir" ],
+    "Completed"                        => [ "Duplicated", "Restart Setup", "Restart Cluster", "Restart PostProcess", "ArchiveWorkdir", "ArchiveWorkdirAsFile", "UnarchiveWorkdir", "RemoveWorkdir", "SaveWorkdir" ],
+    "Duplicated"                       => [ "Restart Setup" ],
+
+    #===============================================================================
+    # Killed ruby code... (bourreau will check it's more than 8 hours ago)
+    #===============================================================================
+
+    # Current                          => List of states we can change to
+    #--------------------------------  ---------------------------------------------
+    "Setting Up"                       => [ "Duplicated", "Terminated" ],
+    "Post Processing"                  => [ "Duplicated", "Terminated" ],
+    "Restarting Setup"                 => [ "Duplicated", "Terminated" ],
+    "Restarting Cluster"               => [ "Duplicated", "Terminated" ],
+    "Restarting PostProcess"           => [ "Duplicated", "Terminated" ],
+    "Recovering Setup"                 => [ "Duplicated", "Terminated" ],
+    "Recovering Cluster"               => [ "Duplicated", "Terminated" ],
+    "Recovering PostProcess"           => [ "Duplicated", "Terminated" ],
+
+    #===============================================================================
+    # Special states used by serializers and parallelizers
+    #===============================================================================
+
+    "Standby"                          => [],
+    "Configured"                       => [ "Terminated" ],
+    "Preset"                           => []   # kind of dummy last entry
+
+    # Other transitions are not used by the interface,
+    # as they cannot be triggered by the user. For
+    # instance, "On CPU" to "Data Ready", which is
+    # handled by the Bourreau Workers.
+  }
+
+  # This constant is a direct way of accessing AllowedOperations, with
+  # true returned from AllowedOperationsHash[[state,newstate]]
+  AllowedOperationsHash = AllowedOperations.inject({}) do |hash,(state,newstates)|
+    newstates.each { |newstate| hash[[state,newstate]]=true } ; hash
   end
 
 end

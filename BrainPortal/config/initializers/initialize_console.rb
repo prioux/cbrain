@@ -23,7 +23,7 @@
 # Console-specific initialization code.
 #=================================================================
 
-if defined?(Rails::Console)
+if defined?(Rails::Console) && defined?(IRB) # FIXME this no longer does anything in V8
   IRB.conf[:RC_NAME_GENERATOR] = lambda do |ext|
     ext.to_s == '_history' ? (ENV['HOME'] + '/.irb-history')
                            : (Rails.root + "config/console_rc/init_rc.rb").to_s

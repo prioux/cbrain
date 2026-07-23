@@ -58,7 +58,7 @@ module TaskFormHelper
     parents.each do |parent|
       dirname = parent.to_s.demodulize.underscore
       file    = "tasks/cbrain_plugins/installed-plugins/cbrain_task/#{dirname}/views/#{basename}.html.erb"
-      next unless File.exists?(Rails.root + "app/views" + file)
+      next unless File.exist?(Rails.root + "app/views" + file)
       return "tasks/cbrain_plugins/installed-plugins/cbrain_task/#{dirname}/views/#{plain}.html.erb"
     end
     cb_error "Cannot find task partial '#{partial_name}' for task #{@task.class}"

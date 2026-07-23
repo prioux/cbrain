@@ -23,7 +23,7 @@
 require 'csv'
 
 # Model for CSV file.
-class CSVFile < TextFile
+class CsvFile < TextFile
 
   Revision_info=CbrainFileRevision[__FILE__] #:nodoc:
 
@@ -173,3 +173,4 @@ class CSVFile < TextFile
   end
 
 end
+

@@ -72,7 +72,7 @@ class CbrainSystemChecks < CbrainChecker #:nodoc:
     end
 
     # Find myself.
-    rr = Class.const_get(mytype).find_by_name(myname)
+    rr = mytype.constantize.find_by_name(myname)
 
     if rr
       # The most important global assignment in the CBRAIN system!

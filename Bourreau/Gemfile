@@ -40,7 +40,6 @@ gem "bcrypt_pbkdf"
 # Other utilities
 gem "sys-proctable", '~> 1.2.0'
 gem "mysql2",        '< 0.5'
-gem "log4r"
 gem "puma"
 gem "pbkdf2-ruby"
 gem "json-schema"

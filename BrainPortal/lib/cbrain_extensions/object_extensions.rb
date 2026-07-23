@@ -2,7 +2,7 @@
 #
 # CBRAIN Project
 #
-# Copyright (C) 2021
+# Copyright (C) 2008-2026
 # The Royal Institution for the Advancement of Learning
 # McGill University
 #
@@ -20,11 +20,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-# Wrapper namespace for all tasks integrated with the
-# new Boutiques integrator.
-class BoutiquesTask # not a AR model and does not inherit from nothing
+module CbrainExtensions::ObjectExtensions
 
-  Revision_info=CbrainFileRevision[__FILE__] #:nodoc:
+  require_relative "object_extensions/deep_clone"
+  require_relative "object_extensions/revision_tracking"
 
 end
-

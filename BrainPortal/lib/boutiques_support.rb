@@ -497,13 +497,13 @@ module BoutiquesSupport
 
       # Returns a modified hash with keys all padded with '|'
       max_pad_keys = ->(hash) do
-        copy = HashWithIndifferentAccess.new.merge(hash.dup)
+        copy = ActiveSupport::HashWithIndifferentAccess.new.merge(hash.dup)
         max  = maxkeylength.(copy)
         pad_keys.(copy,max)
         copy
       end
 
-      final  = HashWithIndifferentAccess.new.merge(self.dup)
+      final  = ActiveSupport::HashWithIndifferentAccess.new.merge(self.dup)
 
       final['inputs'].map!       { |input|  max_pad_keys.(input)  }
       final['output-files'].map! { |output| max_pad_keys.(output) } if final['output-files'].present?

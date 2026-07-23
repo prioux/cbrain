@@ -20,8 +20,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-require 'file_info'
-
 # Controller for the DataProvider resource.
 class DataProvidersController < ApplicationController
 

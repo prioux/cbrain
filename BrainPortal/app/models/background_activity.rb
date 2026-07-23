@@ -99,7 +99,7 @@ class BackgroundActivity < ApplicationRecord
   cbrain_abstract_model! # objects of this class are not to be instanciated
 
   serialize_as_indifferent_hash :items
-  serialize                     :messages
+  serialize                     :messages, :coder => YAML
   serialize_as_indifferent_hash :options
 
   validates_presence_of :status

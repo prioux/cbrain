@@ -285,7 +285,7 @@ Rails.application.routes.draw do
     # NeuroHub Resources
     resources :nh_invitations, :only => [ :new, :create, :index, :update, :destroy]
     resources :nh_signups
-    resources :nh_users,       :only => [ :myaccount, :edit, :update] do
+    resources :nh_users,       :only => [             :edit, :update] do
       collection do
         get  'change_password'
         post 'new_token'
