@@ -472,6 +472,7 @@ class BackgroundActivity < ApplicationRecord
   end
 
   def remove_lock
+    return nil if self.destroyed? # this can happen when a BAC destroys itself
     lock_key = self.uniq_thread_id
     return nil if self.handler_lock != lock_key
     self.update_column(:handler_lock, nil)
