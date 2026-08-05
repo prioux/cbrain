@@ -153,22 +153,27 @@ class GroupsController < ApplicationController
     original_creator  = @group.creator_id
 
     new_group_attr    = group_params
+    new_group_attr[:user_ids] ||= [] # in here, IDs are strings
+    new_group_attr[:user_ids].map! { |s| s.to_s }
 
-    unless current_user.has_role? :admin_user
-      new_group_attr[:site_id] = current_user.site_id
+    if ! current_user.has_role? :admin_user # if not admin...
+      new_group_attr[:site_id] = current_user.site_id # ... this stays the same no matter what
     end
 
-    unless params[:update_users].present?
-      new_group_attr[:user_ids] = @group.user_ids.map(&:to_s)
+    # add_users and remove_users are API options
+    if params[:add_users].present? # option: add users to existing list
+      new_group_attr[:user_ids] = original_user_ids.map(&:to_s) | new_group_attr[:user_ids]
+    elsif params[:remove_users].present? # option: remove users to existing list
+      new_group_attr[:user_ids] = original_user_ids.map(&:to_s) - new_group_attr[:user_ids]
+    elsif params[:update_users].blank? # web form with all users; if blank, no list of users provided at all
+      new_group_attr[:user_ids] = @group.user_ids.map(&:to_s) # use original list
     end
 
-    new_group_attr[:user_ids] ||= []
-
-    unless new_group_attr[:user_ids].blank?
+    if new_group_attr[:user_ids].present?
       if current_user.has_role? :normal_user
-        new_group_attr[:user_ids] &= @group.user_ids.map(&:to_s)
-      else
-        new_group_attr[:user_ids] &= current_user.visible_users.map{ |u| u.id.to_s  }
+        new_group_attr[:user_ids] &= original_user_ids.map(&:to_s) # validate only users that are already there
+      else # for admin user, or site admin, allow any visible user.
+        new_group_attr[:user_ids] &= current_user.visible_users.map { |u| u.id.to_s  }
       end
     end
 
