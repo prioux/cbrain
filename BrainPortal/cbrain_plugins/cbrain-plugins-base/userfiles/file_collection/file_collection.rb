@@ -72,6 +72,8 @@ class FileCollection < Userfile
 
     self.remove_unwanted_files
 
+    self.adjust_extra_nesting # if we have, say, a folder structure like "colname/colname/..."
+
     self.sync_to_provider
     self.set_size!
     self.save
@@ -160,6 +162,53 @@ class FileCollection < Userfile
         end
       }
     end
+  end
+
+  # Looks at the content of the local cache and
+  # detects if it seems we have one too many layers of
+  # folders. e.g. the collection is called "myfolder"
+  # and it contains, as the only significant entry in it,
+  # another folder called "myfolder". Ignored are some
+  # additional meta data sometimes found after extracting
+  # a ZIP file, e.g. "__MACOSX" and "._stuff".
+  # Content of the FileCollection must already be synchronized,
+  # otherwise an exception is raised (programmer error).
+  def has_extra_nesting?
+    cb_error "Collection #{self.id} is not cached yet" unless
+      self.is_locally_synced?
+
+    # Examine content of cache
+    dir           = self.cache_full_path
+    raw_entries   = Dir.open(dir) { |dh| dh.entries }
+    clean_entries = raw_entries.reject do |ename|
+      ename == '__MACOSX' || # created by Finder
+      ename.start_with?('.') # includes '.', '..' and '._stuff' and more too.
+    end
+
+    # Let's verify we only have a single folder named
+    # the same as the FileCollection
+    return true if clean_entries.size  == 1         &&
+                   clean_entries.first == self.name &&
+                   File.directory?("#{dir}/#{clean_entries.first}")
+    false
+  end
+
+  # Examined the cached content of the collection and
+  # if it has the layout described by has_extra_nesting?,
+  # this it will adjust the nexting to remove the spurious
+  # folder layer.
+  def adjust_extra_nesting
+    return false unless self.has_extra_nesting?
+    self.addlog "Detected extra nesting, adjusting folder hierarchy"
+    dir    = self.cache_full_path.to_s
+    sub    = dir   + "/#{self.name}"
+    tmpmv  = dir   + "-#{Process.pid}-#{rand(10000)}"
+    tmpsub = tmpmv + "/#{self.name}"
+    return false unless File.directory?(sub) # just a safety check; has_extra_nesting?() should have verified that
+    File.rename(dir,tmpmv)
+    File.rename(tmpsub,dir) # move it up one level in the tree
+    FileUtils.remove_dir(tmpmv) # the old folder, including stuff we ignored in has_extra_nesting?()
+    true
   end
 
   # Content loader
