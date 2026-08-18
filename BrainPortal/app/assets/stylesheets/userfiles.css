@@ -42,7 +42,7 @@
 }
 
 #userfiles_table td.type_icon > .ui-icon {
-  background-image: url(<%= asset_path 'images/ui-black-icons.png' %>);
+  background-image: url("/images/ui-black-icons.png");
 }
 
 #userfiles_display td.name {
@@ -209,7 +209,7 @@
 #menu-list .ui-icon,
 #userfiles_context_menu .ui-icon,
 #menu-list .act-icon {
-  background-image: url(<%= asset_path 'images/ui-black-icons.png' %>);
+  background-image: url("/images/ui-black-icons.png");
 }
 
 #menu-list .act-icon {
@@ -313,7 +313,7 @@
 }
 
 .dlg-chk + .dlg-chk-icon > .ui-icon {
-  background-image: url(<%= asset_path 'images/ui-black-icons.png' %>);
+  background-image: url("/images/ui-black-icons.png");
   visibility: hidden;
 }
 
@@ -421,7 +421,7 @@
 }
 
 #up-dp-help {
-  background-image: url(<%= asset_path 'images/ui-blue-icons.png' %>);
+  background-image: url("/images/ui-blue-icons.png");
   display: inline-block;
   vertical-align: middle;
 }
@@ -445,7 +445,7 @@
 }
 
 #up-opt-icon > .ui-icon {
-  background-image: url(<%= asset_path 'images/ui-black-icons.png' %>);
+  background-image: url("/images/ui-black-icons.png");
 }
 
 #up-opt-toggle:checked + #up-opt-icon > .ui-icon.up-open,
@@ -591,14 +591,14 @@ td.tag-files {
 }
 
 #tag-table .tag-ind > .ui-icon {
-  background-image: url(<%= asset_path 'images/ui-black-icons.png' %>);
+  background-image: url("/images/ui-black-icons.png");
   display: inline-block;
   visibility: hidden;
 }
 
 #tag-table .tag-act > .ui-icon {
   background-color: inherit;
-  background-image: url(<%= asset_path 'images/ui-blue-icons.png' %>);
+  background-image: url("/images/ui-blue-icons.png");
   border: 0;
   cursor: pointer;
   display: block;
@@ -606,7 +606,7 @@ td.tag-files {
 }
 
 #tag-table .tag-act > .ui-icon:disabled {
-  background-image: url(<%= asset_path 'jquery-ui/ui-icons_777777_256x240.png' %>);
+  background-image: url("/jquery-ui/ui-icons_777777_256x240.png");
   cursor: inherit;
 }
 

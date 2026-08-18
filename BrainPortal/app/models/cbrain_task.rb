@@ -1160,7 +1160,8 @@ class CbrainTask < ApplicationRecord
       Dir.chdir(dir) do
         Dir.glob("*.rb").each do |rubyfile|
           model = rubyfile.sub(/.rb\z/, '')
-          require_dependency "#{dir}/#{model}.rb" unless
+          #require_dependency "#{dir}/#{model}.rb" unless
+          require "#{dir}/#{model}.rb" unless
             [ model.classify, model.camelize ].any? { |m| CbrainTask.const_defined?(m) rescue nil }
         end
       end

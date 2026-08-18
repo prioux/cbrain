@@ -42,8 +42,10 @@
 
   if ! CbrainTask.const_defined? model.classify
     #puts_blue "LOADING #{bytype_code}"
-    require_dependency bytype_code if File.exist?(bytype_code)
-    require_dependency common_code if File.exist?(common_code)
+    #require_dependency bytype_code if File.exist?(bytype_code)
+    #require_dependency common_code if File.exist?(common_code)
+    require bytype_code if File.exist?(bytype_code)
+    require common_code if File.exist?(common_code)
   end
 
 end

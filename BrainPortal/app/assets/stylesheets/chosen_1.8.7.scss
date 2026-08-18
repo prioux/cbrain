@@ -1,5 +1,5 @@
-$chosen-sprite: url(<%= asset_path 'chosen-sprite.png' %>) !default;
-$chosen-sprite-retina: url(<%= asset_path 'chosen-sprite@2x.png' %>) !default;
+$chosen-sprite: url(chosen-sprite.png) !default;
+$chosen-sprite-retina: url(chosen-sprite@2x.png) !default;
 
 /* @group Base */
 .chosen-container {

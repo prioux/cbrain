@@ -56,8 +56,8 @@ class Userfile < ApplicationRecord
                           :filename_format => true
 
   # Callbacks specific to some DataProvider properties
-  before_create           :flat_dir_dp_name_uniqueness # this method is also used as a validator (see below)
-  validate                :flat_dir_dp_name_uniqueness # this method is also used as a before_create callback (see above)
+  before_create           :flat_dir_dp_name_uniqueness_throw
+  validate                :flat_dir_dp_name_uniqueness
   before_save             :browse_path_nullify
   validate                :validate_browse_path
 
@@ -1167,6 +1167,11 @@ class Userfile < ApplicationRecord
     false
   end
 
+  def flat_dir_dp_name_uniqueness_throw #:nodoc:
+    throw :abort unless self.flat_dir_dp_name_uniqueness
+    true
+  end
+
   # This method is used as a before_save callback.
   # If a userfile record has a browse_path present, nullify it if
   # the associated data provider does not have the browse_path capability
@@ -1220,7 +1225,8 @@ class Userfile < ApplicationRecord
         model = model_file.sub(/\.rb\z/,"").classify
         next if Object.const_defined? model # already loaded? Skip.
         #puts_blue "Loading Userfile subclass #{model} from #{model_file} ..."
-        require_dependency "#{CBRAIN::UserfilesPlugins_Dir}/#{model_file}"
+        #require_dependency "#{CBRAIN::UserfilesPlugins_Dir}/#{model_file}"
+        require "#{CBRAIN::UserfilesPlugins_Dir}/#{model_file}"
       end
     end
   end

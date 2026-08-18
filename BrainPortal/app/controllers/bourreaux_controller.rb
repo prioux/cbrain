@@ -176,7 +176,7 @@ class BourreauxController < ApplicationController
       # Record new ID for local cache; this can also be done during the boot process.
       if (@bourreau.id == RemoteResource.current_resource.id)
         md5 = DataProvider.create_cache_md5
-        @bourreau.update_attributes( :cache_md5 => md5 )
+        @bourreau.update( :cache_md5 => md5 )
       end
 
       Message.send_message(current_user,

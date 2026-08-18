@@ -223,7 +223,8 @@ class ApplicationController < ActionController::Base
   def hostname_from_ip(ip) # :nodoc:
     return ip if ip.blank? || ip !~ /\A\d+\.\d+\.\d+\.\d+\z/
     host = Rails.cache.fetch("host_addr/#{ip}", expires_in: 24.hours) do
-      Socket.gethostbyaddr(ip.split(/\./).map(&:to_i).pack("CCCC")).try(:first) rescue ip
+      #Socket.gethostbyaddr(ip.split(/\./).map(&:to_i).pack("CCCC")).try(:first) rescue ip
+      Addrinfo.ip(ip).getnameinfo.first
     end
     host = ip if host.size < 2 # seen weird "." as a result of lookup
     host
@@ -332,11 +333,11 @@ class ApplicationController < ActionController::Base
         if mess.critical? || mess.display?
           @display_messages << mess
           unless mess.critical?
-            mess.update_attributes(:display  => false)
+            mess.update(:display  => false)
           end
         end
       else
-        mess.update_attributes(:read  => true)
+        mess.update(:read  => true)
       end
     end
   end
@@ -439,7 +440,8 @@ begin
   Dir.chdir(File.join(Rails.root.to_s, "app", "models")) do
     Dir.glob("*.rb").each do |model|
       model.sub!(/.rb$/,"")
-      require_dependency "#{model}.rb" unless Object.const_defined? model.classify
+      #require_dependency "#{model}.rb" unless Object.const_defined? model.classify
+      require "#{model}.rb" unless Object.const_defined? model.classify
     end
   end
 rescue => error

@@ -122,8 +122,8 @@ class DataProvidersController < ApplicationController
   # only UserkeyFlatDirSshDataProvider, S3FlatDataProvider, S3MultiLevelDataProvider
   def create_personal
     @provider = DataProvider.new(base_provider_params).class_update
-    @provider.update_attributes(userkey_provider_params) if @provider.is_a?(UserkeyFlatDirSshDataProvider)
-    @provider.update_attributes(s3_provider_params)      if @provider.is_a?(S3FlatDataProvider)
+    @provider.update(userkey_provider_params) if @provider.is_a?(UserkeyFlatDirSshDataProvider)
+    @provider.update(s3_provider_params)      if @provider.is_a?(S3FlatDataProvider)
 
     authorized_type     = [UserkeyFlatDirSshDataProvider, S3FlatDataProvider, S3MultiLevelDataProvider]
     @provider.errors.add(:type, "is not allowed") unless authorized_type.include?(@provider.type)

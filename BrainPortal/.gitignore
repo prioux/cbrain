@@ -40,3 +40,6 @@ Gemfile.lock
 # This will be removed/adjusted in a future CBRAIN release
 /seeds_dev_support_dir
 
+
+/app/assets/builds/*
+!/app/assets/builds/.keep

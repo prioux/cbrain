@@ -130,7 +130,7 @@ class MessagesController < ApplicationController
 
     # It seems we only support changing the read/unread attribute.
     respond_to do |format|
-      if @message.update_attributes(:read =>  params[:read])
+      if @message.update(:read =>  params[:read])
         format.xml  { head :ok }
         format.js   { head :ok }
       else

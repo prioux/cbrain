@@ -25,12 +25,12 @@
   <head>
     <title><%= RemoteResource.current_resource.name.presence || "CBRAIN" %><%= yield :title %></title>
 
-    <% small_logo = RemoteResource.current_resource.small_logo.blank? ? "/images/custom_logos/cb-small_white_blue.png" : RemoteResource.current_resource.small_logo %>
-    <% large_logo = RemoteResource.current_resource.large_logo.blank? ? "/images/custom_logos/cb-large_white_blue.png" : RemoteResource.current_resource.large_logo %>
+    <% small_logo = RemoteResource.current_resource.small_logo.blank? ? "custom_logos/cb-small_white_blue.png" : RemoteResource.current_resource.small_logo %>
+    <% large_logo = RemoteResource.current_resource.large_logo.blank? ? "custom_logos/cb-large_white_blue.png" : RemoteResource.current_resource.large_logo %>
 
-    <link rel="shortcut icon"                    type="image/png" href="<%= small_logo %>">
-    <link rel="apple-touch-icon" sizes="96x96"   type="image/png" href="<%= small_logo %>">
-    <link rel="apple-touch-icon" sizes="145x145" type="image/png" href="<%= large_logo %>">
+    <link rel="shortcut icon"                    type="image/png" href="<%= asset_path(small_logo) %>">
+    <link rel="apple-touch-icon" sizes="96x96"   type="image/png" href="<%= asset_path(small_logo) %>">
+    <link rel="apple-touch-icon" sizes="145x145" type="image/png" href="<%= asset_path(large_logo) %>">
 
     <%
         # Get the CSRF meta tags, but add IDs to them
@@ -40,13 +40,20 @@
     %>
     <%= id_csrf_meta_tag.html_safe %>
 
-    <%= stylesheet_link_tag  "cbrain", "dynamic-table", "jquery-ui", "chosen_1.8.7", :media => "all" %>
-    <%= javascript_include_tag "jquery", "jquery-ui", "jquery.form", "jquery_ujs" %>
+    <%= stylesheet_link_tag  "cbrain",        :media => "all" %>
+    <%= stylesheet_link_tag  "dynamic-table", :media => "all" %>
+    <%= stylesheet_link_tag  "jquery-ui",     :media => "all" %>
+    <%= stylesheet_link_tag  "chosen_1.8.7",  :media => "all" %>
 
     <%= yield :head %>
   </head>
 
   <body id="cbrain">
+
+    <%= javascript_include_tag "jquery"      %>
+    <%= javascript_include_tag "jquery-ui"   %>
+    <%= javascript_include_tag "jquery.form" %>
+    <%= javascript_include_tag "jquery_ujs"  %>
 
     <!-- Main HTML Content -->
 

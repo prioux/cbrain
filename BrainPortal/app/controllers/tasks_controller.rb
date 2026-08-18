@@ -635,7 +635,7 @@ class TasksController < ApplicationController
       operation =
         case field_to_update
           when :user
-            ["update_attributes", {:user_id => new_user_id}]
+            ["update", {:user_id => new_user_id}]
           when :group
             user_to_avail_group_ids = {}
             new_tasklist = tasklist.dup
@@ -648,7 +648,7 @@ class TasksController < ApplicationController
             failed_tasks = tasklist - new_tasklist
             failed_list["new group is not accessible by task's owner"] = failed_tasks if failed_tasks.present?
             tasklist     = new_tasklist
-            ["update_attributes", {:group_id => new_group_id}]
+            ["update", {:group_id => new_group_id}]
           when :results_data_provider
             user_to_avail_dp_ids = {}
             new_tasklist = tasklist.dup
@@ -661,7 +661,7 @@ class TasksController < ApplicationController
             failed_tasks = tasklist - new_tasklist
             failed_list["new data provider is not accessible by task's owner"] = failed_tasks if failed_tasks.present?
             tasklist     = new_tasklist
-            ["update_attributes", {:results_data_provider_id => new_dp_id}]
+            ["update", {:results_data_provider_id => new_dp_id}]
           when :tool_config
             user_to_avail_new_tool_config = {}
             old_tcid_to_tool_id           = {}
@@ -680,7 +680,7 @@ class TasksController < ApplicationController
             failed_tasks = tasklist - new_tasklist
             failed_list["error when updating tool config"] = failed_tasks if failed_tasks.present?
             tasklist     = new_tasklist
-            ["update_attributes", {:tool_config_id => new_tool_config.id}]
+            ["update", {:tool_config_id => new_tool_config.id}]
         end
 
       tasklist.each { |task| success_list << task if task.send(*operation) }

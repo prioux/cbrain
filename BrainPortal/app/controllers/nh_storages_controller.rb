@@ -58,7 +58,7 @@ class NhStoragesController < NeurohubApplicationController
     @nh_dp = UserkeyFlatDirSshDataProvider.new(attributes)
 
     # Some constant attributes
-    @nh_dp.update_attributes(
+    @nh_dp.update(
       :user_id  => current_user.id,
       :online   => true,
     )

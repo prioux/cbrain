@@ -45,10 +45,11 @@ class CbrainBootValidations
         # from .../lib/rails/commands/console/console_command.rb:86:in blah
         next unless callerline.to_s.match( %r[ rails/commands/([a-z]+) ]x )
         Regexp.last_match[1]
-      end.compact
+      end.compact.uniq
       program_name = 'console' if program_names[0] == 'console'
       program_name = 'server'  if program_names[0] == 'server'
       program_name = 'utils'   if program_names[0] == 'generate'
+      program_name = 'rake'    if program_names[0] == 'rake'
       puts "Unknown program names: #{program_names.inspect}" if program_name.nil? && program_names.present?
     end
 
@@ -119,8 +120,11 @@ class CbrainBootValidations
     # Rake Exceptions By First Argument
     #
     skip_validations_for = [ /^db:/, /^cbrain:plugins/, /^cbrain:test/, /^route/, /^assets/, /^cbrain:nagios/, /^cbrain:boutiques:rewrite/ ]
-    first_arg   = ARGV.detect { |x| x =~ /^[\w:]+/i } # first thing that looks like abc:def:ghi
-    first_arg ||= '(none)'
+    first_arg = ARGV.detect { |x| x =~ /^[\w:]+/i } # first thing that looks like abc:def:ghi
+    if first_arg.blank?
+      puts "ERROR: please run rake tasks with 'rake', not 'rails'."
+      exit 2
+    end
     if skip_validations_for.any? { |p| first_arg =~ p }
       #------------------------------------------------------------------------------
       puts "V> \t- No validations needed for rake task '#{first_arg}'. Skipping."

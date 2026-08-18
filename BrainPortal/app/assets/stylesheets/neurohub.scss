@@ -1,4 +1,4 @@
-@import "<%= asset_path './normalize.css' %>";
+@import "normalize.css";
 /*
   LEGEND
    - BREAKPOINTS
@@ -589,7 +589,7 @@ $size    : xs, sm, md, lg
 
 // neurohub logo as a background image
 @mixin logoImg($variant, $color) {
-  background-image: url(<%=asset_path"/images/neurohub/NH_hbhl_\#{$variant}_\#{$color}.png"%>);
+  background-image: url("neurohub/NH_hbhl_"$variant"_"$color".png");
   background-repeat: no-repeat;
   background-size: contain;
 }
@@ -2356,7 +2356,7 @@ $FEATURE_MAX: 15;
       width: 100%;
       height: 100%;
       position: absolute;
-      background-image: url(<%=asset_path"/images/neurohub/NH_login_backsplash.png"%>);
+      background-image: url("neurohub/NH_login_backsplash.png");
       background-size: cover;
       top: 0;
       left: 0;

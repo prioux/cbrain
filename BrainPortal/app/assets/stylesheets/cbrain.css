@@ -1597,7 +1597,7 @@ pre {
   display: inline-block;
   vertical-align: middle;
   visibility: hidden;
-  background-image: url(<%= asset_path 'images/ui-black-icons.png' %>);
+  background-image: url("/images/ui-black-icons.png");
 }
 
 .psel-count {
@@ -1912,7 +1912,7 @@ th.center_align_heading {
 
 .tsk-prm-opt-lbl > .tsk-prm-opt-icon,
 .tsk-prm-chk-lbl > .tsk-prm-chk-icon {
-  background-image: url(<%= asset_path 'jquery-ui/ui-icons_ffffff_256x240.png' %>);
+  background-image: url("/jquery-ui/ui-icons_ffffff_256x240.png");
   margin-left: 3px;
   margin-top: 2px;
   visibility: hidden;
@@ -1971,7 +1971,7 @@ th.center_align_heading {
 }
 
 .tsk-prm-sel > .tsk-prm-sel-icon {
-  background-image: url(<%= asset_path 'jquery-ui/ui-icons_777777_256x240.png' %>);
+  background-image: url("/jquery-ui/ui-icons_777777_256x240.png");
   float: right;
   margin-top: 2px;
 }
@@ -2026,7 +2026,7 @@ th.center_align_heading {
 
 .tsk-prm-list > li > .tsk-prm-add,
 .tsk-prm-list > li > .tsk-prm-rm {
-  background-image: url(<%= asset_path 'jquery-ui/ui-icons_777777_256x240.png' %>);
+  background-image: url("/jquery-ui/ui-icons_777777_256x240.png");
   display: inline-block;
   cursor: pointer;
   position: relative;
@@ -2106,7 +2106,7 @@ img {
 }
 
 #tasks_table td.expand > .ui-icon {
-  background-image: url(<%= asset_path 'images/ui-black-icons.png' %>);
+  background-image: url("/images/ui-black-icons.png");
 }
 
 #tasks_table td.expand > .batch-btn,

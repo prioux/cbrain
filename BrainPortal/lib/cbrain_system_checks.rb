@@ -77,7 +77,7 @@ class CbrainSystemChecks < CbrainChecker #:nodoc:
     if rr
       # The most important global assignment in the CBRAIN system!
       CBRAIN.const_set("SelfRemoteResourceId",rr.id)
-      rr.update_attributes( :online => true ) unless rr.online?
+      rr.update( :online => true ) unless rr.online?
       puts "C> \t- This CBRAIN app is named '#{rr.name}' and is registered."
       return true # everything OK
     end
@@ -255,7 +255,7 @@ class CbrainSystemChecks < CbrainChecker #:nodoc:
     if md5.blank?
       puts "C> \t- Recording new DataProvider MD5 ID in database."
       md5 = DataProvider.create_cache_md5
-      myself.update_attributes( :cache_md5 => md5 )
+      myself.update( :cache_md5 => md5 )
     end
 
     DataProvider.revision_info.self_update # just to make sure we have it

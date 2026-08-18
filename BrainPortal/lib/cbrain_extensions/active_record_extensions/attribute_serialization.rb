@@ -54,7 +54,7 @@ module CbrainExtensions #:nodoc:
         unless to_update.empty?
           # Proper code that is supposed to update it once and for all in the DB:
 
-          #self.update_attributes(to_update) # reactive once YAML dumping is fixed in Rails
+          #self.update(to_update) # reactive once YAML dumping is fixed in Rails
 
           # Unfortunately, currently a HashWithIndifferentAccess is serialized EXACTLY as a Hash, so
           # it doesn't save any differently in the DB. To prevent unnecessary writes and rewrites of

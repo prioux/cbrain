@@ -172,8 +172,8 @@ admin = CoreAdmin.seed_record!(
 end
 
 # Update creator ID for the two system groups
-admin.own_group.update_attributes!(:creator_id => admin.id)
-everyone.update_attributes!(:creator_id => admin.id)
+admin.own_group.update!(:creator_id => admin.id)
+everyone.update!(:creator_id => admin.id)
 
 # Create portal object
 BrainPortal.seed_record!(
