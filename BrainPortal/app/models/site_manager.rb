@@ -73,7 +73,7 @@ class SiteManager < User
   end
 
   def visible_users #:nodoc:
-    User.where("users.type <> 'AdminUser'")
+    self.site.users
   end
 
 end

@@ -36,6 +36,7 @@ class BackgroundActivityWorker < Worker
     @myself    = RemoteResource.current_resource
     @myself_id = @myself.id
     worker_log.info "Starting BackgroundActivityWorker"
+    worker_log.info("BackgroundActivity rev. " + BackgroundActivity.revision_info.format)
   end
 
   def main_process_is_alive?

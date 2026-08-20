@@ -41,6 +41,14 @@ class CbrainTask::CbSerializer < ClusterTask
     return walltime
   end
 
+  def job_memory_estimate #:nodoc:
+    estimates = self.enabled_subtasks.map do |otask|
+      otask.job_memory_estimate
+    end.compact
+    return nil if estimates.blank?
+    estimates.max
+  end
+
   def cluster_commands #:nodoc:
     subtasks = self.enabled_subtasks
 

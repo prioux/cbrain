@@ -115,6 +115,7 @@ end
 
 def sql(command)
   res = ApplicationRecord.connection.execute command
+  return res if ! res.respond_to?(:fields)
   f   = res.fields
   tab = res.to_a.unshift f
   htable tab

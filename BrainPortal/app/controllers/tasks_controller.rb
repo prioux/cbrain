@@ -1348,7 +1348,7 @@ class TasksController < ApplicationController
 
   def task_params #:nodoc:
     task_attr = params.require_as_params(:cbrain_task).permit(
-      :user_id, :group_id, :description,
+      :user_id, :group_id, :description, :status,
       :bourreau_id, :tool_config_id,
       :batch_id,
       :results_data_provider_id, :params => {}
