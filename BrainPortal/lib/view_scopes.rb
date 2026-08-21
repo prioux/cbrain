@@ -1276,9 +1276,14 @@ module ViewScopes
       scopes     = {
           name => { 'f' =>
             common.map { |attr,value|
-              value.is_a?(Array) ?
-              { 'a' => attr.to_s, 'v' => value.to_a.map(&:to_s), 'o' => 'in' } :
-              { 'a' => attr.to_s, 'v' => value.to_s }
+              if value.is_a?(Array)
+                { 'a' => attr.to_s, 'v' => value.to_a.map(&:to_s), 'o' => 'in' }
+              elsif value.to_s =~ /^([<>]=?)\s*(.+)\z/  # ">2020-01-01", "<= 34" etc
+                comparison,val = Regexp.last_match[1..2]
+                { 'a' => attr.to_s, 'v' => val, 'o' => comparison }
+              else
+                { 'a' => attr.to_s, 'v' => value.to_s }
+              end
             }
           }
         } if common.present?
