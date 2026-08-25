@@ -39,8 +39,8 @@
 
   /* jQuery UI icons */
   var icons = {
-    column_show: "ui-icon-radio-off",
-    column_hide: "ui-icon-radio-on"
+    column_show: "ui-icon-check",
+    column_hide: "ui-icon-blank"
   };
 
   /* localStorage column visibility module */

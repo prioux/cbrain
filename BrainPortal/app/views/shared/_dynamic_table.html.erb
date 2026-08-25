@@ -147,7 +147,7 @@
           <tbody class="dt-cpop-body">
             <% table.columns.each do |column| %>
               <tr class="dt-cpop-col" data-column="<%= column.name.to_s %>">
-                <td class="dt-cpop-icon ui-icon ui-icon-radio-<%= column.visible? ? "off" : "on" %>"></td>
+                <td class="dt-cpop-icon ui-icon <%= column.visible? ? "ui-icon-check" : "ui-icon-blank" %>"></td>
                 <td><%= column.pretty_name %></td>
               </tr>
             <% end %>
