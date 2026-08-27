@@ -26,7 +26,6 @@
 # Create just the minimal necessary records for running API tests.
 #
 
-require 'readline'
 require 'socket'
 require 'etc'
 

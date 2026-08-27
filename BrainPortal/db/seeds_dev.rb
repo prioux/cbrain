@@ -40,7 +40,6 @@
 # for testing user interface elements, resource access, etc etc.
 #
 
-require 'readline'
 require 'socket'
 require 'etc'
 

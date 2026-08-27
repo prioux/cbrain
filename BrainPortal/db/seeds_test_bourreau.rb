@@ -27,7 +27,6 @@
 # running tests on the bourreau code side.
 #
 
-require 'readline'
 require 'socket'
 require 'etc'
 

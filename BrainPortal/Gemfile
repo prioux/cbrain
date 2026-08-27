@@ -141,8 +141,16 @@ end
 #----------------------
 
 group :test do
-  # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]
-  gem "capybara"
-  gem "selenium-webdriver"
+  gem "rspec"
+  gem "rspec-core"
+  gem "rspec-rails"
+  gem "factory_bot",       '6.4.2', :require => false
+  gem "factory_bot_rails", '6.4.2', :require => false
+  gem "rails-controller-testing"
+  gem "rspec-mocks"
+  gem "rspec-activemodel-mocks"
+  gem "rspec-collection_matchers"
+  gem "database_cleaner"
+  gem 'cbrain_client', '>= 7.0.0', :git => 'https://github.com/aces/cbrain-client-gem'
 end
 
