@@ -88,12 +88,12 @@ jobs:
       ###########################################################
       - name: Prepare Ruby Gems
         run: |
-          cd BrainPortal                   || exit 2
-          bundle config path ../gem-cache  || exit 3
-          bundle install                   || exit 4
-          cd ../Bourreau                   || exit 2
-          bundle config path ../gem-cache  || exit 3
-          bundle install                   || exit 4
+          cd BrainPortal                       || exit 2
+          bundle config set path ../gem-cache  || exit 3
+          bundle install                       || exit 4
+          cd ../Bourreau                       || exit 2
+          bundle config set path ../gem-cache  || exit 3
+          bundle install                       || exit 4
 
       ###########################################################
       - name: Configure Plugins

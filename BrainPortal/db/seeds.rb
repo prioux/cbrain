@@ -24,7 +24,7 @@
 # Seed for CBRAIN
 #
 
-require 'readline'
+require 'reline'
 require 'socket'
 
 #
@@ -130,7 +130,7 @@ if portal_name.blank?
   puts "Enter a name (a simple identifier) for the Portal."
   puts ""
   print "Portal name: "
-  portal_name = Readline.readline
+  portal_name = Reline.readline
   raise "Invalid name for the portal." if portal_name.blank? || portal_name !~ /\A[a-z]\w+\z/i
 end
 
