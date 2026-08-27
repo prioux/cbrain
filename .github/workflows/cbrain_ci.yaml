@@ -158,8 +158,8 @@ jobs:
         if: ${{ failure() || success() }}
         working-directory: BrainPortal
         run: |
-          bundle exec rake "db:seed:test:api"      || exit 2
-          bundle exec rails server puma -p 3000 -d || exit 3
+          bundle exec rake "db:seed:test:api" || exit 2
+          bundle exec rails server -p 3000 -d || exit 3
           cd test_api
           sleep 5
           perl curl_req_tester.pl -h localhost -p 3000 -s http -v${CBRAIN_CURL_TEST_VERBOSE_LEVEL:-1} -R
@@ -175,8 +175,8 @@ jobs:
         if: ${{ failure() || success() }}
         working-directory: BrainPortal
         run: |
-          bundle exec rake "db:seed:test:api"      || exit 2
-          bundle exec rails server puma -p 3000 -d || exit 3
+          bundle exec rake "db:seed:test:api" || exit 2
+          bundle exec rails server -p 3000 -d || exit 3
           cd test_api
           sleep 5
           bundle exec rake "cbrain:test:api:client" -v "${CBRAIN_GEM_TEST_VERBOSE_LEVEL:-1}"
