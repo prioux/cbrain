@@ -1397,7 +1397,7 @@ module ViewScopes
     scope.tr!('-_', '+/')
     scope = Base64.decode64(scope)
     scope = ActiveSupport::Gzip.decompress(scope)
-    scope = YAML.safe_load(scope, [Date, Time, DateTime])
+    scope = YAML.safe_load(scope, :permitted_classes => [Date, Time, DateTime])
     scope
   end
 

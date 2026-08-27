@@ -33,7 +33,7 @@
        # Old link based on portal name; to be made customizable soon.
        # link_to_if(current_user.present?, RemoteResource.current_resource.name.presence || "CBRAIN", start_page_path)
     %>
-    <% logo = RemoteResource.current_resource.large_logo.presence || "custom_logos/cbrain-large_white_alpha.png" %>
+    <% logo = RemoteResource.current_resource.large_logo.presence || "/images/custom_logos/cbrain-large_white_alpha.png" %>
 
     <%= link_to_if(current_user.present?, image_tag(logo, :id => "header_logo").html_safe , start_page_path) %>
 

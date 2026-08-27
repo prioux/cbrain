@@ -32,7 +32,7 @@ class UsersController < ApplicationController
   api_available :only => [ :index, :create, :show, :destroy, :update, :create_user_session, :push_keys, :new_token, :new_token_from_jwt ]
 
   before_action :login_required,        :except => [:request_password, :send_password, :new_token_from_jwt]
-  before_action :manager_role_required, :except => [:show, :edit, :update, :request_password, :send_password, :change_password, :push_keys, :new_token, :new_token_from_jwt]
+  before_action :manager_role_required, :except => [:show, :update, :request_password, :send_password, :change_password, :push_keys, :new_token, :new_token_from_jwt]
   before_action :admin_role_required,   :only =>   [:create_user_session]
 
   spurious_params_ban_ip :request_password => [],

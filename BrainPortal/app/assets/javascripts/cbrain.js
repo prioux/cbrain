@@ -244,6 +244,7 @@
 
     //Turns the element into a button looking thing
     loaded_element.find(".button").each( function() {
+console.log("BUTTON: " + this);
       $(this).button();
     });
 

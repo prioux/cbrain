@@ -195,7 +195,7 @@
     <% end %>
 
     <%
-      # Note: should be in a if/end block testing for the configuration of orcid_uri, like in NeuroHub
+      # TODO: should be in a if/end block testing for the configuration of orcid_uri
     %>
     <% t.cell "ORCID Identity", :show_width => 2 do %>
       <% orcid_id = @user.meta["orcid"] %>
@@ -204,7 +204,6 @@
        <% else %>
          (No ORCID identity linked to your account)
        <% end %>
-       <br><small><strong>Note:</strong> Use the <%= link_to "NeuroHub interface", myaccount_path %> to manage the ORCID identity link</small>
     <% end %>
 
   <% end %>

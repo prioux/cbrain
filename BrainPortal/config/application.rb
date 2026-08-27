@@ -54,7 +54,9 @@ module CbrainRailsPortal
       Time,
       ActiveSupport::HashWithIndifferentAccess,
       ActiveSupport::TimeZone,
-      ActiveSupport::TimeWithZone
+      ActiveSupport::TimeWithZone,
+      ActionController::Parameters,
+      Set
     ]
 
     # Schedule the validation code to run after the application boots
