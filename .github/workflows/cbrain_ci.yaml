@@ -47,7 +47,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7.2
+          ruby-version: 4.0.2
 
       ###########################################################
       - name: Setup python
