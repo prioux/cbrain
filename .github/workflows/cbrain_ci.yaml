@@ -100,11 +100,11 @@ jobs:
       ###########################################################
       - name: Save Cached Gems
         id: save-gems
-        if: {{ steps.prepare-gems.outcome == 'success' }}
+        if: ${{ steps.prepare-gems.outcome == 'success' }}
         uses: actions/cache/save@v6 # speeds up 'Prepare Ruby Gems' above for next run
         with:
           path: gem-cache
-          key: {{ steps.restore-gems.outputs.cache-primary-key }}
+          key: ${{ steps.restore-gems.outputs.cache-primary-key }}
 
       ###########################################################
       - name: Configure Plugins
