@@ -13,7 +13,8 @@ ENV['RAILS_ENV'] ||= 'test'
 # DATABASE_URL=mysql2://prioux:mypassword@localhost/prioux_test
 #
 require 'yaml'
-require 'uri'
+require 'cgi'
+
 1.times do # a block to encapsulate local variables and not pollute anything
   env           = ENV['RAILS_ENV']
   dbconfig_file = "../BrainPortal/config/database.yml"
@@ -26,8 +27,12 @@ require 'uri'
   host          = config["host"]     || "localhost"
   database      = config["database"] || "nodatabase"
   password    &&= ":#{password}"
-  url           = "#{adapter}://#{username}#{password}@#{host}/#{database}"
-  ENV["DATABASE_URL"] = URI.escape url
+  #url           = "#{adapter}://#{username}:#{password}@#{host}/#{database}"
+  ENV["DATABASE_URL"] = "#{adapter}://" +
+                        CGI.escapeURIComponent(username) + ":" +
+                        CGI.escapeURIComponent(password) + "@" +
+                        CGI.escapeURIComponent(host)     + "/" +
+                        CGI.escapeURIComponent(database)
   ENV["CBRAIN_RAILS_APP_NAME"] = "Test_Bourreau_Exec" # This is initialized by rake db:seed:test:bourreau
 end
 

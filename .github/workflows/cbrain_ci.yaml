@@ -80,13 +80,15 @@ jobs:
 
       ###########################################################
       - name: Reload Cached Gems
-        uses: actions/cache@v3 # speeds up 'Prepare Ruby Gems' below
+        id: restore-gems
+        uses: actions/cache/restore@v6 # speeds up 'Prepare Ruby Gems' below
         with:
           path: gem-cache
           key: ubuntu-24-gems-${{ hashFiles('*/Gemfile') }}
 
       ###########################################################
       - name: Prepare Ruby Gems
+        id: prepare-gems
         run: |
           cd BrainPortal                       || exit 2
           bundle config set path ../gem-cache  || exit 3
@@ -94,6 +96,15 @@ jobs:
           cd ../Bourreau                       || exit 2
           bundle config set path ../gem-cache  || exit 3
           bundle install                       || exit 4
+
+      ###########################################################
+      - name: Save Cached Gems
+        id: save-gems
+        if: {{ steps.prepare-gems.outcome == 'success' }}
+        uses: actions/cache/save@v6 # speeds up 'Prepare Ruby Gems' above for next run
+        with:
+          path: gem-cache
+          key: {{ steps.restore-gems.outputs.cache-primary-key }}
 
       ###########################################################
       - name: Configure Plugins
