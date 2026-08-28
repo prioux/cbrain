@@ -153,8 +153,12 @@ namespace :cbrain do
               condition: lambda { |f| File.directory?(f) },
               after: lambda do |symlink_location|
                 base=Pathname.new(symlink_location).basename
-                if ! File.symlink?("#{tasks_plugins_dir}/#{base}.rb")
-                  #File.symlink "cbrain_task_class_loader.rb", "#{tasks_plugins_dir}/#{base}.rb"
+                if ! File.exist?("#{tasks_plugins_dir}/#{base}.rb") &&
+                  (
+                    File.exist?("cbrain_task/#{base}/portal/#{base}.rb")  ||
+                    File.exist?("cbrain_task/#{base}/common/#{base}.rb")  ||
+                    File.exist?("cbrain_task/#{base}/bourreau/#{base}.rb")
+                  )
                   File.link "#{tasks_plugins_dir}/cbrain_task_class_loader.rb", "#{tasks_plugins_dir}/#{base}.rb"
                 end
               end
