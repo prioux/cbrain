@@ -279,7 +279,7 @@
               <% if @viewer %>
                 <% if @viewer.errors.empty? %>
                   <% DataUsage.increase_views(current_user, @userfile) %>
-                  <%= render :file  => @viewer.partial_path %>
+                  <%= render :partial => @viewer.partial_path %>
                 <% else %>
                   <%= render :partial  => "viewer_errors" %>
                 <% end %>

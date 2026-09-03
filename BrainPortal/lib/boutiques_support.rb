@@ -591,6 +591,24 @@ module BoutiquesSupport
       self.class.cb_invoke_html_id(self.id, as_list)
     end
 
+    # This method conflicts with the method 'minimum(key)' in Enumerable.
+    # To keep as much compatibility as possible, if invoked with an
+    # argument, the Enumerable method is called, otherwise we fetch from
+    # the hash.
+    def minimum(key=nil)
+      return super(key) if key
+      self[:minimum]
+    end
+
+    # This method conflicts with the method 'maximum(key)' in Enumerable.
+    # To keep as much compatibility as possible, if invoked with an
+    # argument, the Enumerable method is called, otherwise we fetch from
+    # the hash.
+    def maximum(key=nil)
+      return super(key) if key
+      self[:maximum]
+    end
+
   end # class BoutiquesSupport::Input
 
 end

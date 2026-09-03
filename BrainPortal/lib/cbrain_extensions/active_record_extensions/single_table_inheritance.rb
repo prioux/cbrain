@@ -125,7 +125,7 @@ module CbrainExtensions #:nodoc:
 
       private
 
-      def create_or_update(*args) #:nodoc:
+      def create_or_update(**args) #:nodoc:
         if @__unscope_type_condition__
           unscope_type_condition do
             super

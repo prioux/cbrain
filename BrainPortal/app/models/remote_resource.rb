@@ -148,7 +148,7 @@ class RemoteResource < ApplicationRecord
   def self.current_resource_db_config(railsenv = nil)
     railsenv ||= (Rails.env || 'production')
     myconfigs  = ApplicationRecord.configurations
-    myconfig   = myconfigs[railsenv].dup
+    myconfig   = myconfigs.find_db_config(railsenv).configuration_hash.dup
     myconfig
   end
 

@@ -868,21 +868,23 @@ class Userfile < ApplicationRecord
   # can be found, typically under the CBRAIN plugins directory. For a
   # model such as TextFile, it would map to a single directory:
   #
-  #   "/path/to/cbrain_plugins/installed-plugins/userfiles/text_file/views"
+  #   "userfiles/cbrain_plugins/text_file/views"
   #
   # If given a basename or relative path for a partial (without the leading
   # underscore), will return the path to that partial. E.g. with "abc/def"
   #
-  #   "/path/to/cbrain_plugins/installed-plugins/userfiles/text_file/views/abc/_def"
+  #   "userfiles/cbrain_plugins/text_file/views/abc/def"
   #
   # Returns a Pathname object.
   def self.view_path(partial_name=nil)
-    base = Pathname.new(CBRAIN::ViewsPlugins_Dir) + self.to_s.underscore
+    base = Pathname.new("userfiles/cbrain_plugins") + self.to_s.underscore
     return base if partial_name.to_s.blank?
     partial_name = Pathname.new(partial_name.to_s).cleanpath
     raise "View partial path outside of userfile plugin." if partial_name.absolute? || partial_name.to_s =~ /\A\.\./
-    base = base + partial_name.to_s.sub(/([^\/]+)\z/,'_\1')
-    base
+    base = base + partial_name.to_s #.sub(/([^\/]+)\z/,'_\1')
+    #return "#{base}.html.erb" if File.exist?("#{base}.html.erb")
+    #return "#{base}.html"     if File.exist?("#{base}.html")
+    base.to_s
   end
 
   # Returns the directory where some public assets (files) for the current model

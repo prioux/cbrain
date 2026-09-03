@@ -62,8 +62,8 @@ class TagsController < ApplicationController
         format.xml  { render :xml  => @tag.for_api, :status => :created, :location => @tag }
         format.json { render :json => @tag.for_api, :status => :created, :location => @tag }
       else
-        format.xml  { render :xml  => @tag.errors, :status => :unprocessable_entity }
-        format.json { render :json => @tag.errors, :status => :unprocessable_entity }
+        format.xml  { render :xml  => @tag.errors, :status => :unprocessable_content }
+        format.json { render :json => @tag.errors, :status => :unprocessable_content }
       end
       format.js
     end
@@ -81,8 +81,8 @@ class TagsController < ApplicationController
         format.xml  { head :ok, :content_type => 'text/plain' }
         format.json { head :ok }
       else
-        format.xml  { render :xml  => @tag.errors, :status => :unprocessable_entity }
-        format.json { render :json => @tag.errors, :status => :unprocessable_entity }
+        format.xml  { render :xml  => @tag.errors, :status => :unprocessable_content }
+        format.json { render :json => @tag.errors, :status => :unprocessable_content }
       end
     end
   end

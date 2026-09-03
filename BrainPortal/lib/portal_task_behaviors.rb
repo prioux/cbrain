@@ -446,7 +446,9 @@ module PortalTaskBehaviors
     end
 
     def each(&block) #:nodoc:
-      @real_errors.each do |attr, msg|
+      @real_errors.each do |error_obj|
+        attr = error_obj.attribute
+        msg  = error_obj.message
         next unless attr.to_s =~ /\Acbrain_task_BRA_params_KET_/ # see path2key below
         yield key2path(attr), msg
       end
@@ -480,11 +482,6 @@ module PortalTaskBehaviors
 
     def keys #:nodoc:
       map { |key, _| key }.uniq
-    end
-
-    def set(paramspath, value) #:nodoc:
-      # for some reason the get() and set() method REALLY want a symbol
-      @real_errors.set(path2key(paramspath), Array(value))
     end
 
     def to_hash(full_messages = false) #:nodoc:

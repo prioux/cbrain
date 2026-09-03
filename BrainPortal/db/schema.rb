@@ -12,10 +12,10 @@
 
 ActiveRecord::Schema[8.1].define(version: 2026_07_21_172358) do
   create_table "access_profiles", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "description"
     t.string "color"
     t.datetime "created_at", precision: nil, null: false
+    t.string "description"
+    t.string "name", null: false
     t.datetime "updated_at", precision: nil, null: false
   end
 
@@ -32,8 +32,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_21_172358) do
   create_table "active_record_logs", id: :integer, charset: "utf8mb3", collation: "utf8mb3_unicode_ci", force: :cascade do |t|
     t.integer "ar_id"
     t.string "ar_table_name"
-    t.text "log"
     t.datetime "created_at", precision: nil
+    t.text "log"
     t.datetime "updated_at", precision: nil
     t.index ["ar_id", "ar_table_name"], name: "index_active_record_logs_on_ar_id_and_ar_table_name"
   end

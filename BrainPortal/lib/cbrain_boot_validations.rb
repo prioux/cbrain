@@ -26,11 +26,6 @@
 # the Rails application all executing this code at the same time.
 #=================================================================
 
-#require 'socket'
-#require 'cbrain_checker'
-#require 'cbrain_system_checks'
-
-
 class CbrainBootValidations
 
   def self.validate!
@@ -55,7 +50,7 @@ class CbrainBootValidations
 
     program_name ||= 'unknown'
 
-    # At this point, program_name should be one of keywords in the second line of the Regex above
+    # At this point, program_name should be one of keywords extracted from the Regex above
     puts "V> CBRAIN identified boot mode: #{program_name}"
 
     self.validations_for_console  if program_name == 'console'
@@ -122,8 +117,7 @@ class CbrainBootValidations
     skip_validations_for = [ /^db:/, /^cbrain:plugins/, /^cbrain:test/, /^route/, /^assets/, /^cbrain:nagios/, /^cbrain:boutiques:rewrite/ ]
     first_arg = ARGV.detect { |x| x =~ /^[\w:]+/i } # first thing that looks like abc:def:ghi
     if first_arg.blank?
-      puts "ERROR: please run rake tasks with 'rake', not 'rails'."
-      exit 2
+      puts "Warning: please run rake tasks with 'rake', not 'rails'."
     end
     if skip_validations_for.any? { |p| first_arg =~ p }
       #------------------------------------------------------------------------------

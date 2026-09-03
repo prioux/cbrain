@@ -113,7 +113,7 @@ class MessagesController < ApplicationController
         format.xml  { render :xml => @message, :status => :created, :location => @message }
         format.html { redirect_to :action => :index }
       else
-        format.xml  { render :xml => @message.errors, :status => :unprocessable_entity }
+        format.xml  { render :xml => @message.errors, :status => :unprocessable_content }
         format.html { render :action => :new  }
       end
     end
@@ -135,8 +135,8 @@ class MessagesController < ApplicationController
         format.js   { head :ok }
       else
         flash.now[:error] = "Problem updating message."
-        format.xml  { render :xml  => @message.errors, :status => :unprocessable_entity }
-        format.js   { render :json => @message.errors, :status => :unprocessable_entity }
+        format.xml  { render :xml  => @message.errors, :status => :unprocessable_content }
+        format.js   { render :json => @message.errors, :status => :unprocessable_content }
       end
     end
   end

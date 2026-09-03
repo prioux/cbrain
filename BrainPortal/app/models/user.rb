@@ -84,7 +84,7 @@ class User < ApplicationRecord
   before_save               :encrypt_password
   before_save               :destroy_sessions_if_locked
   before_save               :apply_access_profiles
-  after_update              :system_group_site_update
+  before_update             :system_group_site_update
   after_destroy             :destroy_system_group
   after_destroy             :destroy_empty_work_groups
   after_destroy             :destroy_user_sessions

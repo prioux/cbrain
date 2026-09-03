@@ -102,8 +102,8 @@ class DataProvidersController < ApplicationController
       @typelist = get_type_list
       respond_to do |format|
         format.html { render :action => :new }
-        format.xml  { render :xml  => @provider.errors, :status => :unprocessable_entity }
-        format.json { render :json => @provider.errors, :status => :unprocessable_entity }
+        format.xml  { render :xml  => @provider.errors, :status => :unprocessable_content }
+        format.json { render :json => @provider.errors, :status => :unprocessable_content }
       end
     end
   end
@@ -138,7 +138,7 @@ class DataProvidersController < ApplicationController
       @groups = current_user.assignable_groups
       respond_to do |format|
         format.html { render :action => :new_personal}
-        format.json { render :json   => @provider.errors,  :status => :unprocessable_entity }
+        format.json { render :json   => @provider.errors,  :status => :unprocessable_content }
       end
       return
     end
@@ -196,7 +196,7 @@ class DataProvidersController < ApplicationController
       @provider.reload
       respond_to do |format|
         format.html { render :action => 'show' }
-        format.json { render :json   => @provider.errors, :status  => :unprocessable_entity }
+        format.json { render :json   => @provider.errors, :status  => :unprocessable_content }
       end
     end
   end
@@ -287,8 +287,8 @@ class DataProvidersController < ApplicationController
   rescue
     respond_to do |format|
       format.html { render :html => '<strong style="color:red">No Information Available</strong>'.html_safe }
-      format.xml  { head :unprocessable_entity }
-      format.json { head :unprocessable_entity }
+      format.xml  { head :unprocessable_content }
+      format.json { head :unprocessable_content }
     end
 
   end
@@ -360,8 +360,8 @@ class DataProvidersController < ApplicationController
       Message.send_internal_error_message(User.find_by_login('admin'), "Browse DP exception", e, params) rescue nil
       respond_to do |format|
         format.html { redirect_to :action => :index }
-        format.xml  { render :xml   => flash[:error], :status  => :unprocessable_entity}
-        format.json { render :json  => flash[:error], :status  => :unprocessable_entity}
+        format.xml  { render :xml   => flash[:error], :status  => :unprocessable_content}
+        format.json { render :json  => flash[:error], :status  => :unprocessable_content}
       end
       return
     end
@@ -450,8 +450,8 @@ class DataProvidersController < ApplicationController
       flash[:error] = "Missing destination data provider for copy or move."
       respond_to do |format|
         format.html { redirect_to :action => :browse }
-        format.xml  { render :xml  => { :error => flash[:error] }, :status => :unprocessable_entity }
-        format.json { render :json => { :error => flash[:error] }, :status => :unprocessable_entity }
+        format.xml  { render :xml  => { :error => flash[:error] }, :status => :unprocessable_content }
+        format.json { render :json => { :error => flash[:error] }, :status => :unprocessable_content }
       end
       return
     end

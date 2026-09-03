@@ -192,8 +192,8 @@ class UsersController < ApplicationController
     else
       respond_to do |format|
         format.html { render :action => :new }
-        format.xml  { render :xml  => @user.errors, :status => :unprocessable_entity }
-        format.json { render :json => @user.errors, :status => :unprocessable_entity }
+        format.xml  { render :xml  => @user.errors, :status => :unprocessable_content }
+        format.json { render :json => @user.errors, :status => :unprocessable_content }
       end
     end
   end
@@ -308,8 +308,8 @@ class UsersController < ApplicationController
             render action: "show"
           end
         end
-        format.xml  { render :xml  => @user.errors, :status => :unprocessable_entity }
-        format.json { render :json => @user.errors, :status => :unprocessable_entity }
+        format.xml  { render :xml  => @user.errors, :status => :unprocessable_content }
+        format.json { render :json => @user.errors, :status => :unprocessable_content }
       end
     end
   end
@@ -478,7 +478,7 @@ class UsersController < ApplicationController
 
       format.json do
         status = :ok
-        status = :unprocessable_entity if error_list.present?
+        status = :unprocessable_content if error_list.present?
         render :json => { :pushed => ok_list, :failed => error_list }, :status => status
       end
     end

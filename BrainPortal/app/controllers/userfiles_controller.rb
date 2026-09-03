@@ -382,7 +382,7 @@ class UserfilesController < ApplicationController
 
     # Render partial
     if params[:apply_div] == "false"
-      render :file   => @viewer.partial_path.to_s, :layout => params[:apply_layout].present?
+      render :partial => @viewer.partial_path.to_s, :layout => params[:apply_layout].present?
       return
     end
 
@@ -519,7 +519,7 @@ class UserfilesController < ApplicationController
     if upload_stream.blank?
       respond_to do |format|
         format.html  { redirect_to redirect_path }
-        format.json  { head :unprocessable_entity }
+        format.json  { head :unprocessable_content }
       end
       return
     end
@@ -568,7 +568,7 @@ class UserfilesController < ApplicationController
         respond_to do |format|
           format.html { redirect_to redirect_path }
           format.json {
-                          render :json => { :notice => flash[:error] }, :status => :unprocessable_entity
+                          render :json => { :notice => flash[:error] }, :status => :unprocessable_content
                           flash.discard # no need to repeat error message
                       }
         end
@@ -610,8 +610,8 @@ class UserfilesController < ApplicationController
       flash[:error] += "Error: file #{basename} does not have one of the supported extensions: .tar, .tar.gz, .tgz or .zip.\n"
       respond_to do |format|
         format.html { redirect_to redirect_path }
-        format.json { render :json => flash[:error], :status  => :unprocessable_entity}
-        format.xml  { render :xml  => flash[:error], :status  => :unprocessable_entity}
+        format.json { render :json => flash[:error], :status  => :unprocessable_content}
+        format.xml  { render :xml  => flash[:error], :status  => :unprocessable_content}
       end
       return
     end
@@ -624,8 +624,8 @@ class UserfilesController < ApplicationController
         flash[:error] = "Collection '#{collection_name}' already exists.\n"
         respond_to do |format|
           format.html { redirect_to redirect_path }
-          format.json { render :json => flash[:error], :status  => :unprocessable_entity}
-          format.xml  { render :xml  => flash[:error], :status  => :unprocessable_entity}
+          format.json { render :json => flash[:error], :status  => :unprocessable_content}
+          format.xml  { render :xml  => flash[:error], :status  => :unprocessable_content}
         end
         return
       end
@@ -678,8 +678,8 @@ class UserfilesController < ApplicationController
         end
         respond_to do |format|
           format.html { redirect_to redirect_path }
-          format.json { render :json => flash[:error], :status  => :unprocessable_entity}
-          format.xml  { render :xml  => flash[:error], :status  => :unprocessable_entity}
+          format.json { render :json => flash[:error], :status  => :unprocessable_content}
+          format.xml  { render :xml  => flash[:error], :status  => :unprocessable_content}
         end
       end # save collection
       return
@@ -760,8 +760,8 @@ class UserfilesController < ApplicationController
       else
         @userfile.reload
         format.html { render(:action  => 'show') }
-        format.xml  { render :xml  => @userfile.errors, :status => :unprocessable_entity }
-        format.json { render :json => @userfile.errors, :status => :unprocessable_entity }
+        format.xml  { render :xml  => @userfile.errors, :status => :unprocessable_content }
+        format.json { render :json => @userfile.errors, :status => :unprocessable_content }
       end
     end
   end
