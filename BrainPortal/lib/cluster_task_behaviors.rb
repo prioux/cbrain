@@ -62,13 +62,6 @@ module ClusterTaskBehaviors
 
   Revision_info=CbrainFileRevision[__FILE__] #:nodoc:
 
-  # Adds class methods and class callbacks
-  def self.included(includer) #:nodoc:
-    includer.class_eval do
-      extend CluBehavClassMethods
-
-  include NumericalSubdirTree
-
   # The 'science' script is where the scientific commands
   # of the task are held. It is a bash script, where most
   # of the earlier commands are created from the ToolConfigs,
@@ -76,16 +69,23 @@ module ClusterTaskBehaviors
   # method.
   #
   # These basenames get modified with suffixes appended to them.
-  const_set :RUNTIME_INFO_BASENAME   , ".runtime_info"# appended: ".{name}.{run_id}.kv"
-  const_set :SCIENCE_SCRIPT_BASENAME , ".science"     # appended: ".{name}.{run_id}.sh"
-  const_set :SCIENCE_STDOUT_BASENAME , ".science.out" # appended: ".{name}.{run_id}"
-  const_set :SCIENCE_STDERR_BASENAME , ".science.err" # appended: ".{name}.{run_id}"
+  RUNTIME_INFO_BASENAME   = ".runtime_info"# appended: ".{name}.{run_id}.kv"
+  SCIENCE_SCRIPT_BASENAME = ".science"     # appended: ".{name}.{run_id}.sh"
+  SCIENCE_STDOUT_BASENAME = ".science.out" # appended: ".{name}.{run_id}"
+  SCIENCE_STDERR_BASENAME = ".science.err" # appended: ".{name}.{run_id}"
 
   # The qsub script is a bash wrapper that executes the scientific script.
   # These basenames get modified with suffixes appended to them.
-  const_set :QSUB_SCRIPT_BASENAME    , ".qsub"        # appended: ".{name}.{run_id}.sh"
-  const_set :QSUB_STDOUT_BASENAME    , ".qsub.out"    # appended: ".{name}.{run_id}"
-  const_set :QSUB_STDERR_BASENAME    , ".qsub.err"    # appended: ".{name}.{run_id}"
+  QSUB_SCRIPT_BASENAME    = ".qsub"        # appended: ".{name}.{run_id}.sh"
+  QSUB_STDOUT_BASENAME    = ".qsub.out"    # appended: ".{name}.{run_id}"
+  QSUB_STDERR_BASENAME    = ".qsub.err"    # appended: ".{name}.{run_id}"
+
+  # Adds class methods and class callbacks
+  def self.included(includer) #:nodoc:
+    includer.class_eval do
+      extend CluBehavClassMethods
+
+  include NumericalSubdirTree
 
   before_destroy :before_destroy_terminate_and_rm_workdir
   validate       :task_is_proper_subclass
@@ -1666,10 +1666,8 @@ module ClusterTaskBehaviors
   # Cluster Task Status Update Methods
   ##################################################################
 
-  # This is so ActiveSupport::Concern add the two below methods in the included class as class methods.
+  # The two methods below are included as class methods.
   module CluBehavClassMethods
-
-    protected
 
     # Returns the class name which implements this
     # Bourreau's cluster management system interface.
@@ -1688,8 +1686,6 @@ module ClusterTaskBehaviors
     end
 
   end
-
-  protected
 
   # Returns the class name which implements this
   # Bourreau's cluster management system interface.

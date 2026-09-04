@@ -61,6 +61,7 @@ gem "jquery-form-rails"
 gem "activeresource", require: "active_resource"
 gem "actionpack-xml_parser"
 gem "activemodel-serializers-xml"
+gem "rexml"
 
 # Assets gems
 gem "sprockets-rails", :require => "sprockets/railtie"

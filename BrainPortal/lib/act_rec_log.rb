@@ -231,7 +231,7 @@ module ActRecLog
       calling_class  = "" if ! options[:show_class]
 
       # Prepare the string for the method name, as in "methodname() "
-      calling_method = options[:prefix] || ( calling_info.match(/in `(.*)'/) ? ($1 + "() ") : "unknown() " )
+      calling_method = options[:prefix] || ( calling_info.match(/in .(.*)'/) ? ($1 + "() ") : "unknown() " )
       calling_method = "" if ! options[:show_method]
       calling_method.sub!(/(block|rescue).*? in /, "")
 

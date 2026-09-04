@@ -53,6 +53,7 @@ gem "csv"
 gem "activeresource", require: "active_resource"
 gem "actionpack-xml_parser"
 gem "activemodel-serializers-xml"
+gem "rexml"
 
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"

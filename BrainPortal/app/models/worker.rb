@@ -636,7 +636,7 @@ class Worker
   def validate_I_am_a_worker #:nodoc:
     if self.role != :worker
       #./worker.rb:256:in `main_loop'
-      caller[1] =~ /([^\/]\S*\:\d+):in `(\S+)'\s*$/
+      caller[1] =~ /([^\/]\S*\:\d+):in .(\S+)'\s*$/
       mycontext = Regexp.last_match[2] + "() at " + Regexp.last_match[1]
       cb_error "Worker '#{self.pretty_name}' API error: method '#{mycontext}' called from proxy?!?"
     end
@@ -645,7 +645,7 @@ class Worker
   def validate_I_am_a_proxy #:nodoc:
     if self.role != :proxy
       #./worker.rb:256:in `main_loop'
-      caller[1] =~ /([^\/]\S*\:\d+):in `(\S+)'\s*$/
+      caller[1] =~ /([^\/]\S*\:\d+):in .(\S+)'\s*$/
       mycontext = Regexp.last_match[2] + "() at " + Regexp.last_match[1]
       cb_error "Worker '#{self.pretty_name}' API error: method '#{mycontext}' called from worker?!?"
     end
