@@ -24,11 +24,11 @@
 # for deploying CbrainTasks on the BrainPortal side.
 class PortalTask < CbrainTask
 
-  if Rails.app_class == CbrainRailsPortal::Application
+  if Rails.app_class.to_s == "CbrainRailsPortal::Application"
 
     include PortalTaskBehaviors
 
-  elsif Rails.app_class == CbrainRailsBourreau::Application
+  elsif Rails.app_class.to_s == "CbrainRailsBourreau::Application"
 
     include ClusterTaskBehaviors
 

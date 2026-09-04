@@ -35,7 +35,6 @@ module CbrainRailsPortal
     # A rake task, cbrain:plugins:install:all, will create symlinks in there and
     # properly set up all tasks installed from plugins (and the defaults tasks).
     config.eager_load_paths += Dir[ "#{config.root}/cbrain_plugins/installed-plugins" ]
-    #config.eager_load_paths += Dir[ "#{config.root}/cbrain_plugins/installed-plugins/cbrain_task" ]
 
     # CBRAIN Plugins load paths: where userfiles defined by plugins are located (as links)
     config.eager_load_paths += Dir[ "#{config.root}/cbrain_plugins/installed-plugins/userfiles" ]

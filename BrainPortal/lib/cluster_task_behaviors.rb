@@ -93,7 +93,7 @@ module ClusterTaskBehaviors
   # Resource usage tracking
   after_status_transition 'Queued', 'Data Ready',                  :track_resource_usage_cpu
   after_status_transition 'On CPU', 'Data Ready',                  :track_resource_usage_cpu
-  after_status_transition '*', Regexp.new(FINAL_STATUS.join('|')), :track_resource_usage_final
+  after_status_transition '*', Regexp.new(CbrainTask::FINAL_STATUS.join('|')), :track_resource_usage_final
 
     end
   end

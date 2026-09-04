@@ -26,9 +26,34 @@
 # the Rails application all executing this code at the same time.
 #=================================================================
 
+# This class is just a container for a bunch of code
+# executed once at the end of all the boot process for
+# the CBRAIN application.
 class CbrainBootValidations
 
+  cattr_accessor :cbrain_app
+
+  def self.is_portal?
+    self.cbrain_app == :portal
+  end
+
+  def self.is_bourreau?
+    self.cbrain_app == :bourreau
+  end
+
+  def self.detect_mode
+    if    Rails.app_class.to_s == "CbrainRailsPortal::Application"
+      self.cbrain_app = :portal
+    elsif Rails.app_class.to_s == "CbrainRailsBourreau::Application"
+      self.cbrain_app = :bourreau
+    else
+      raise "Configuration error: can't figure out what CBRAIN application we are."
+    end
+  end
+
   def self.validate!
+
+    self.detect_mode
 
     CbrainSystemChecks.print_intro_info # general information printed to STDOUT
 
@@ -49,6 +74,7 @@ class CbrainBootValidations
     end
 
     program_name ||= 'unknown'
+    program_name = "server" if program_name == "puma"
 
     # At this point, program_name should be one of keywords extracted from the Regex above
     puts "V> CBRAIN identified boot mode: #{program_name}"
@@ -77,12 +103,20 @@ class CbrainBootValidations
     if ENV['CBRAIN_SKIP_VALIDATIONS']
       puts "V> \t- Warning: environment variable 'CBRAIN_SKIP_VALIDATIONS' is set, so we\n"
       puts "V> \t-          are skipping all validations! Proceed at your own risks!\n"
-      CbrainSystemChecks.check([:a002_ensure_Rails_can_find_itself]) rescue true
+      if is_portal?
+        CbrainSystemChecks.check([:a002_ensure_Rails_can_find_itself]) rescue nil
+      end
     else
       puts "V> \t- Note:  You can skip all CBRAIN validations by temporarily setting the\n"
       puts "V> \t         environment variable 'CBRAIN_SKIP_VALIDATIONS' to '1'.\n"
       CbrainSystemChecks.check(:all)
-      PortalSystemChecks.check(:all, :except => [ :z020_start_background_activity_workers ])
+      PortalSystemChecks.check(:all, :except => [ :z020_start_background_activity_workers ]) if is_portal?
+      BourreauSystemChecks.check(
+       :a000_ensure_models_are_preloaded,
+       :a005_ensure_boutiques_descriptors_are_loaded,
+       :a050_ensure_proper_cluster_management_layer_is_loaded,
+       :z000_ensure_we_have_a_forwarded_ssh_agent,
+      ) if is_bourreau?
     end
     Process.setproctitle "CBRAIN Console #{RemoteResource.current_resource.class} #{RemoteResource.current_resource.name}"
   end
@@ -92,7 +126,8 @@ class CbrainBootValidations
   def self.validations_for_server
     puts "V> \t- Running all validations for server."
     CbrainSystemChecks.check(:all)
-    PortalSystemChecks.check(:all)
+    PortalSystemChecks.check(:all)   if is_portal?
+    BourreauSystemChecks.check(:all) if is_bourreau?
     # Note, because the puma server insists on renaming its process,
     # the assignment below is also performed whenever a show
     # action is sent to the controls controller.
@@ -104,13 +139,18 @@ class CbrainBootValidations
   def self.validations_for_rspec
     puts "V> \t- Testing with 'rspec'."
     CbrainSystemChecks.check([:a002_ensure_Rails_can_find_itself])
-    PortalSystemChecks.check([:a000_ensure_models_are_preloaded])
-    PortalSystemChecks.check([:a010_check_if_pending_database_migrations])
+    if is_portal?
+      PortalSystemChecks.check([:a000_ensure_models_are_preloaded])
+      PortalSystemChecks.check([:a010_check_if_pending_database_migrations])
+    else
+      BourreauSystemChecks.check([:a000_ensure_models_are_preloaded])
+    end
   end
 
   # ----- RAKE TASK -----
 
   def self.validations_for_rake
+    return if is_bourreau?
     #
     # Rake Exceptions By First Argument
     #

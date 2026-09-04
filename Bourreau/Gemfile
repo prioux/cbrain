@@ -2,7 +2,7 @@
 #
 # CBRAIN Project
 #
-# Copyright (C) 2008-2012
+# Copyright (C) 2008-2026
 # The Royal Institution for the Advancement of Learning
 # McGill University
 #
@@ -20,7 +20,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-source 'https://rubygems.org'
+source "https://rubygems.org"
 
 #----------------------
 # In the :default group
@@ -29,8 +29,8 @@ source 'https://rubygems.org'
 gem "rails", "~> 8.1.3"
 
 # Network components mostly
-gem "net-ssh",       :require => 'net/ssh'
-gem "net-sftp",      :require => 'net/sftp'
+gem "net-ssh",       :require => "net/ssh"
+gem "net-sftp",      :require => "net/sftp"
 gem "x25519"
 gem "ed25519"
 gem "bcrypt_pbkdf"
@@ -53,6 +53,17 @@ gem "csv"
 gem "activeresource", require: "active_resource"
 gem "actionpack-xml_parser"
 gem "activemodel-serializers-xml"
+
+# Use the Puma web server [https://github.com/puma/puma]
+gem "puma", ">= 5.0"
+# Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
+gem "importmap-rails"
+# Hotwire's SPA-like page accelerator [https://turbo.hotwired.dev]
+gem "turbo-rails"
+
+# Reduces boot times through caching; required in config/boot.rb
+# cannot be used on the bourreau side because of symlinks
+#gem "bootsnap", require: false
 
 #----------------------
 # Test
