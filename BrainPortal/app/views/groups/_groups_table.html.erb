@@ -30,14 +30,14 @@
   <%=
     scope_custom_link(
       "Switch to #{button_view ? 'List' : 'Button'} View",
-      @scope, { 'button' => !button_view }, { :link => { :class => 'button' } }
+      @scope, { 'button' => !button_view }, link: { :class => 'button' }
     )
   %>
 
   <%=
     scope_custom_link(
       "#{@scope.custom[:small_buttons] ? 'Large' : 'Small'} buttons",
-      @scope, { 'small_buttons' => !@scope.custom[:small_buttons] }, { :link => { :class => 'button' } }
+      @scope, { 'small_buttons' => !@scope.custom[:small_buttons] }, link: { :class => 'button' }
     ) if button_view
   %>
 
