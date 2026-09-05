@@ -1234,7 +1234,7 @@ class UserfilesController < ApplicationController
       userfile = userfiles_list[0]
       fullpath = userfile.cache_full_path
       DataUsage.increase_downloads(current_user, userfile)
-      send_file fullpath, :stream => true, :filename => is_blank ? fullpath.basename : specified_filename
+      send_file fullpath.to_s, :stream => true, :filename => is_blank ? fullpath.basename.to_s : specified_filename.to_s
       return
     end
 

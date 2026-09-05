@@ -31,7 +31,7 @@ class GroupsController < ApplicationController
 
   before_action :login_required
 
-  before_action :license_check, :only => [:show, :create, :switch, :edit, :update, :unregister, :destroy]
+  before_action :license_check, :only => [:show, :create, :switch, :update, :unregister, :destroy]
 
   # GET /groups
   # GET /groups.xml
