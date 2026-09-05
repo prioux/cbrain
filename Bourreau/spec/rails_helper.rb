@@ -20,6 +20,7 @@ require 'cgi'
   dbconfig_file = "../BrainPortal/config/database.yml"
   dbinfo        = YAML.load_file dbconfig_file
   config        = dbinfo[env]
+  config        = config["primary"] if config && config["primary"]
   raise "Can't find entry for Rails environment '#{env}' in file #{dbconfig_file}..." unless config
   adapter       = config["adapter"]  || "noadapter"
   username      = config["username"] || "nousername"
