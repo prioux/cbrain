@@ -39,6 +39,11 @@ end
 require 'spec_helper'
 require File.expand_path('../../config/environment', __FILE__)
 require 'rspec/rails'
+require 'factory_bot_rails'
+
+# Prevent database truncation if the environment is production
+abort("The Rails environment is running in production mode!") if Rails.env.production?
+
 # Add additional requires below this line. Rails is not loaded until this point!
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
@@ -60,8 +65,8 @@ require 'rspec/rails'
 CbrainError ; CbrainNotice
 
 RSpec.configure do |config|
-  # If you do not include FactoryBot::Syntax::Methods in your test suite,
-  # then all factory_girl methods will need to be prefaced with FactoryBot.
+
+  # Allow FactoryBot syntax
   config.include FactoryBot::Syntax::Methods
 
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
