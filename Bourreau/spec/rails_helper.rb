@@ -24,10 +24,9 @@ require 'cgi'
   raise "Can't find entry for Rails environment '#{env}' in file #{dbconfig_file}..." unless config
   adapter       = config["adapter"]  || "noadapter"
   username      = config["username"] || "nousername"
-  password      = config["password"]
+  password      = config["password"] || "nopassword"
   host          = config["host"]     || "localhost"
   database      = config["database"] || "nodatabase"
-  password    &&= ":#{password}"
   #url           = "#{adapter}://#{username}:#{password}@#{host}/#{database}"
   ENV["DATABASE_URL"] = "#{adapter}://" +
                         CGI.escapeURIComponent(username) + ":" +
