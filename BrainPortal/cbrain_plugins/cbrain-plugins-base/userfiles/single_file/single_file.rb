@@ -32,7 +32,7 @@ class SingleFile < Userfile
   before_create :set_num_files_to_one
 
   def self.valid_file_classes #:nodoc:
-    @valid_file_classes ||= [SingleFile] + SingleFile.descendants
+    [SingleFile] + SingleFile.descendants
   end
 
   def pretty_type #:nodoc:

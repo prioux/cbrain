@@ -358,7 +358,7 @@ class UserfilesController < ApplicationController
     # Not an officially registered viewer, but it will work for the current rendering.
     if @viewer.blank? && viewer_name =~ /\A\w+\z/
       partial_filename_base = (viewer_userfile_class.view_path + "_#{viewer_name}.#{request.format.to_sym}").to_s
-      if File.exist?(partial_filename_base) || File.exist?(partial_filename_base + ".erb")
+      if File.exist?("#{Rails.root}/app/views/#{partial_filename_base}") || File.exist?("#{Rails.root}/app/views/#{partial_filename_base}.erb")
         @viewer = Userfile::Viewer.new(viewer_userfile_class, :partial => viewer_name)
       end
     end
@@ -983,7 +983,7 @@ class UserfilesController < ApplicationController
 
     @userfile     = Userfile.find_accessible_by_user(@filelist[@current_index], current_user, :access_requested => :read)
     @qc_view_file = @userfile.view_path("qc_panel.html.erb").to_s # model-specific view partial, in its plugin directory
-    if ! File.exist?(@qc_view_file)
+    if ! File.exist?("#{Rails.root}/app.views/#{@qc_view_file}")
       @qc_view_file = "userfiles/_default_qc_panel.html.erb" # default provided by cbrain
     end
 

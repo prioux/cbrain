@@ -288,8 +288,8 @@
               <span class="warning">
                 An error occurred when loading the viewer plugin.
               </span>
-              <% raise e.original_exception unless Rails.env == 'production' %>
-              <% ExceptionLog.log_exception(e.original_exception, current_user, request) %>
+              <% raise e unless Rails.env == 'production' %>
+              <% ExceptionLog.log_exception(e, current_user, request) %>
             <% end %>
           </div>
         </div>
