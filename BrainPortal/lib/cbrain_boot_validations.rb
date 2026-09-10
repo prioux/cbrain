@@ -111,12 +111,12 @@ class CbrainBootValidations
       puts "V> \t         environment variable 'CBRAIN_SKIP_VALIDATIONS' to '1'.\n"
       CbrainSystemChecks.check(:all)
       PortalSystemChecks.check(:all, :except => [ :z020_start_background_activity_workers ]) if is_portal?
-      BourreauSystemChecks.check(
+      BourreauSystemChecks.check([
        :a000_ensure_models_are_preloaded,
        :a005_ensure_boutiques_descriptors_are_loaded,
        :a050_ensure_proper_cluster_management_layer_is_loaded,
        :z000_ensure_we_have_a_forwarded_ssh_agent,
-      ) if is_bourreau?
+      ]) if is_bourreau?
     end
     Process.setproctitle "CBRAIN Console #{RemoteResource.current_resource.class} #{RemoteResource.current_resource.name}"
   end

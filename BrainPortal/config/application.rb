@@ -63,5 +63,12 @@ module CbrainRailsPortal
       CbrainBootValidations.validate!
     end
 
+    # Configure the CBRAIN console with all our helpers
+    console do
+      # This is a trick where we synthetically add the path to a irbrc-type file
+      # as some command-line arguments.
+      ARGV.push("-r","#{Rails.root}/config/console_rc/init_rc.rb")
+    end
+
   end
 end

@@ -78,7 +78,7 @@
     <%= show_hide_toggle "(Show)", "#env_panel", :class  => 'action_link' %>
     </h3>
     <div id="env_panel" style="display: none">
-      <%= array_to_table(ENV.reject { |k,v| k =~ /secret|auth|key|token|pass/i }
+      <%= array_to_table(ENV.reject { |k,v| "#{k},#{v}" =~ /secret|auth|key|tok|pass|cert|identi/i }
           .to_a.sort { |a,b| a[0] <=> b[0] }.flatten, :cols => 2, :td_class => 'left') %>
     </div>
   <% end %>

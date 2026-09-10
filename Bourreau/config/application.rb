@@ -29,7 +29,6 @@ module CbrainRailsBourreau
 
 
     #### CBRAIN HERE ####
-#config.autoload_paths << File.realpath("#{root}/../BrainPortal/lib")
 
     # CBRAIN Plugins load paths: add directory for the CbrainTask models
     # This directory contains symbolic links to a special loader code
@@ -65,6 +64,13 @@ module CbrainRailsBourreau
     # Schedule the validation code to run after the application boots
     config.after_initialize do
       CbrainBootValidations.validate!
+    end
+
+    # Configure the CBRAIN console with all our helpers
+    console do
+      # This is a trick where we synthetically add the path to a irbrc-type file
+      # as some command-line arguments.
+      ARGV.push("-r","#{Rails.root}/config/console_rc/init_rc.rb")
     end
 
   end

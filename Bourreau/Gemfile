@@ -55,6 +55,10 @@ gem "actionpack-xml_parser"
 gem "activemodel-serializers-xml"
 gem "rexml"
 
+# Bourreau console gems; feel free to comment-out if you never plan to run the console
+gem "hirb"
+gem "looksee"
+
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", ">= 5.0"
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
